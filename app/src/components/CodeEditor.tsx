@@ -41,11 +41,12 @@ function getLineSelectionRange(code: string, line: number) {
 }
 
 export function CodeEditor({ code, disabled = false, focusedLine, onChange, onCursorPositionChange }: CodeEditorProps) {
+    const highlightRef = useRef<HTMLPreElement>(null)
     const lineNumberRef = useRef<HTMLTextAreaElement>(null)
     const textareaRef = useRef<HTMLTextAreaElement>(null)
     const [copied, setCopied] = useState(false)
     const [editorMetrics, setEditorMetrics] = useState(DEFAULT_EDITOR_METRICS)
-    const { language } = useCodeHighlight(code)
+    const { highlightedCode, language } = useCodeHighlight(code)
     const { captureCursor, cursorPosition } = useCursorPosition(code)
     const hasCode = code.length > 0
     const lineNumbers = Array.from({ length: code.split('\n').length }, (_, index) => index + 1).join('\n')
@@ -140,9 +141,15 @@ export function CodeEditor({ code, disabled = false, focusedLine, onChange, onCu
                     value={lineNumbers}
                 />
 
+                {hasCode && (
+                    <pre className="code-highlight" aria-hidden="true" ref={highlightRef}>
+                        <code dangerouslySetInnerHTML={{ __html: highlightedCode }} />
+                    </pre>
+                )}
+
                 <textarea
                     aria-label="Paste code for review"
-                    className="code-input"
+                    className={`code-input ${hasCode ? 'has-code' : ''}`}
                     disabled={disabled}
                     ref={textareaRef}
                     onChange={(event) => {
@@ -154,6 +161,13 @@ export function CodeEditor({ code, disabled = false, focusedLine, onChange, onCu
                     onKeyUp={(event) => captureCursor(event.currentTarget)}
                     onSelect={(event) => captureCursor(event.currentTarget)}
                     onScroll={(event) => {
+                        if (highlightRef.current) {
+                            highlightRef.current.scrollTo({
+                                left: event.currentTarget.scrollLeft,
+                                top: event.currentTarget.scrollTop,
+                            })
+                        }
+
                         if (lineNumberRef.current) {
                             lineNumberRef.current.scrollTop = event.currentTarget.scrollTop
                         }

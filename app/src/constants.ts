@@ -14,6 +14,7 @@ export const MIN_RIGHT_PANEL_WIDTH = 280
 export const MAX_RIGHT_PANEL_WIDTH = 560
 
 export const DEFAULT_EDITOR_METRICS = {
+    horizontalScrollbarHeight: 0,
     lineHeight: 24,
     paddingTop: 22,
 }

@@ -33,3 +33,5 @@ This file contains the prompts used for Codex with GPT-5.5 (Medium). An `AGENTS.
 > make it so the side panel on the right is not scrollable horizontally and make it possible for it to be resizable by dragging the border. also do this for the left side panel. also, add a collapse button to both of them.
 
 > move constants scattered across the project to a new constants.ts file
+
+> there is a problem with the editor. for example, when clicking to move to a specific line in the editor, the position is sometimes slightly offset vertically. also, when selecting all text in a scrollable textarea, the selection does not align correctly with the content and is also vertically misaligned. fix this.

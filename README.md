@@ -27,3 +27,9 @@ This project is built using the Cloudflare ecosystem:
 - State:
     - Cloudflare KV - stores review history and cached results
     - Local Storage - saves user sessions and preferences
+
+## References
+
+- https://agents.cloudflare.com
+- https://developers.cloudflare.com/workers-ai/configuration/bindings
+- https://developers.cloudflare.com/kv

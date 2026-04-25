@@ -16,6 +16,15 @@
 	"upload_source_maps": true,
 	"compatibility_flags": [
 		"nodejs_compat"
+	],
+	"ai": {
+		"binding": "AI"
+	},
+	"kv_namespaces": [
+		{
+			"binding": "KV",
+			"id": "<YOUR_BINDING_ID>" // TODO: change later
+		}
 	]
 	/**
 	 * Smart Placement

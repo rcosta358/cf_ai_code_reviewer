@@ -21,12 +21,12 @@
 		"binding": "AI",
 		"remote": true
 	},
-	"kv_namespaces": [
-		{
-			"binding": "KV",
-			"id": "<YOUR_BINDING_ID>" // TODO: change later
-		}
-	]
+	// "kv_namespaces": [
+	// 	{
+	// 		"binding": "KV",
+	// 		"id": "<YOUR_BINDING_ID>"
+	// 	}
+	// ]
 	/**
 	 * Smart Placement
 	 * https://developers.cloudflare.com/workers/configuration/smart-placement/#smart-placement

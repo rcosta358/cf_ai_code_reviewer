@@ -3,7 +3,7 @@ import type { ReviewCategory, ReviewSeverity } from './types/review'
 export const API_REVIEW_ENDPOINT = '/api/review'
 
 export const THEME_STORAGE_KEY = 'ai-code-reviewer-theme'
-export const DEFAULT_THEME = 'light'
+export const DEFAULT_THEME = 'dark'
 
 export const LEFT_PANEL_DEFAULT_WIDTH = 280
 export const RIGHT_PANEL_DEFAULT_WIDTH = 340

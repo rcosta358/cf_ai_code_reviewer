@@ -1,17 +1,6 @@
 import { useMemo } from 'react'
 import hljs from 'highlight.js/lib/common'
-
-const languageLabels: Record<string, string> = {
-    javascript: 'JavaScript',
-    typescript: 'TypeScript',
-    xml: 'HTML/XML',
-    css: 'CSS',
-    scss: 'SCSS',
-    json: 'JSON',
-    bash: 'Shell',
-    shell: 'Shell',
-    plaintext: 'Plain Text',
-}
+import { LANGUAGE_LABELS } from '../constants'
 
 export function useCodeHighlight(code: string) {
     return useMemo(() => {
@@ -26,7 +15,7 @@ export function useCodeHighlight(code: string) {
         const detectedLanguage = result.language ?? 'plaintext'
         return {
             highlightedCode: result.value,
-            language: languageLabels[detectedLanguage] ?? detectedLanguage[0].toUpperCase() + detectedLanguage.slice(1),
+            language: LANGUAGE_LABELS[detectedLanguage] ?? detectedLanguage[0].toUpperCase() + detectedLanguage.slice(1),
         }
     }, [code])
 }

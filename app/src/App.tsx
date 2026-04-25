@@ -3,16 +3,17 @@ import type { CSSProperties, PointerEvent as ReactPointerEvent } from 'react'
 import { CodeReviewWorkspace } from './components/CodeReviewWorkspace'
 import { InsightPanel } from './components/InsightPanel'
 import { SessionSidebar } from './components/SessionSidebar'
+import {
+    COLLAPSED_PANEL_WIDTH,
+    LEFT_PANEL_DEFAULT_WIDTH,
+    MAX_LEFT_PANEL_WIDTH,
+    MAX_RIGHT_PANEL_WIDTH,
+    MIN_LEFT_PANEL_WIDTH,
+    MIN_RIGHT_PANEL_WIDTH,
+    RIGHT_PANEL_DEFAULT_WIDTH,
+} from './constants'
 import { ReviewProvider } from './contexts/ReviewContext'
 import { ThemeProvider } from './contexts/ThemeContext'
-
-const LEFT_PANEL_DEFAULT_WIDTH = 280
-const RIGHT_PANEL_DEFAULT_WIDTH = 340
-const COLLAPSED_PANEL_WIDTH = 58
-const MIN_LEFT_PANEL_WIDTH = 220
-const MAX_LEFT_PANEL_WIDTH = 420
-const MIN_RIGHT_PANEL_WIDTH = 280
-const MAX_RIGHT_PANEL_WIDTH = 560
 
 const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max)
 

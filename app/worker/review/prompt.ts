@@ -17,13 +17,6 @@ const SYSTEM_PROMPT = [
 ].join(' ')
 
 export function buildReviewPrompt(request: ParsedReviewRequest) {
-    const metadata = [
-        request.filename ? `Filename: ${request.filename}` : null,
-        request.language ? `Language: ${request.language}` : null,
-    ]
-        .filter(Boolean)
-        .join('\n')
-
     return {
         messages: [
             {
@@ -34,7 +27,6 @@ export function buildReviewPrompt(request: ParsedReviewRequest) {
                 role: 'user',
                 content: [
                     'Analyze this code and return a JSON object matching the previously provided schema.',
-                    metadata ? `\n${metadata}` : '',
                     '\nHere is the code with line numbers. The numbers and pipe prefixes are not part of the source code:',
                     '```',
                     formatCodeWithLineNumbers(request.code),

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
+import { REVIEW_GENERATION_TIMEOUT_MS, REVIEW_GENERATION_TIMEOUT_SECONDS } from '../constants'
 import { ReviewContext } from './reviewContextValue'
 import type { ReviewContextValue } from './reviewContextValue'
 import { generateReview } from '../services/reviewService'
@@ -36,8 +37,6 @@ const createInitialSession = (): ReviewSession => {
         result: null,
     }
 }
-
-const REVIEW_GENERATION_TIMEOUT_MS = 30000
 
 const getErrorMessage = (error: unknown) => {
     if (error instanceof Error && error.message) {
@@ -175,7 +174,7 @@ export function ReviewProvider({ children }: ReviewProviderProps) {
                 tone: wasAborted && abortReason === 'cancel' ? 'info' : 'warning',
                 text:
           wasAborted && abortReason === 'timeout'
-              ? 'Review generation timed out after 30 seconds and was cancelled.'
+              ? `Review generation timed out after ${REVIEW_GENERATION_TIMEOUT_SECONDS} seconds and was cancelled.`
               : wasAborted
                   ? 'Review generation was cancelled.'
                   : getErrorMessage(error),

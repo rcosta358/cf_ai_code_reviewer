@@ -1,4 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { COPY_FEEDBACK_DURATION_MS, DEFAULT_EDITOR_METRICS } from '../constants'
 import { useCodeHighlight } from '../hooks/useCodeHighlight'
 import { useCursorPosition } from '../hooks/useCursorPosition'
 import { Icon } from './Icon'
@@ -14,16 +15,6 @@ type CodeEditorProps = {
   focusedLine: number | null
   onCursorPositionChange: (cursorPosition: EditorCursorPosition) => void
   onChange: (code: string) => void
-}
-
-type EditorMetrics = {
-  lineHeight: number
-  paddingTop: number
-}
-
-const DEFAULT_EDITOR_METRICS: EditorMetrics = {
-    lineHeight: 24,
-    paddingTop: 22,
 }
 
 export function CodeEditor({ code, disabled = false, focusedLine, onChange, onCursorPositionChange }: CodeEditorProps) {
@@ -85,7 +76,7 @@ export function CodeEditor({ code, disabled = false, focusedLine, onChange, onCu
 
         await navigator.clipboard.writeText(code)
         setCopied(true)
-        window.setTimeout(() => setCopied(false), 1400)
+        window.setTimeout(() => setCopied(false), COPY_FEEDBACK_DURATION_MS)
     }
 
     return (

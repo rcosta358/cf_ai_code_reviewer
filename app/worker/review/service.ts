@@ -1,16 +1,19 @@
 import type { ReviewCategory, ReviewResult, ReviewSeverity } from '../../src/types/review'
 import { buildReviewPrompt } from './prompt'
-import { REVIEW_CATEGORIES, REVIEW_SEVERITIES } from './schema'
 import type { ModelReviewIssue, ModelReviewResult, ParsedReviewRequest } from '../../src/types/worker'
-
-const REVIEW_MODEL = '@cf/meta/llama-3.3-70b-instruct-fp8-fast'
-const MAX_MODEL_TOKENS = 2048
+import {
+    MAX_MODEL_TOKENS,
+    REVIEW_CATEGORIES,
+    REVIEW_MODEL,
+    REVIEW_MODEL_TEMPERATURE,
+    REVIEW_SEVERITIES,
+} from '../../src/constants'
 
 export async function reviewCode(ai: Ai, request: ParsedReviewRequest): Promise<ReviewResult> {
     const modelOutput = await ai.run(REVIEW_MODEL, {
         ...buildReviewPrompt(request),
         max_tokens: MAX_MODEL_TOKENS,
-        temperature: 0.1,
+        temperature: REVIEW_MODEL_TEMPERATURE,
     })
 
     const parsed = parseModelOutput(modelOutput)

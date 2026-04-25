@@ -1,7 +1,6 @@
 import { HTTPException } from 'hono/http-exception'
+import { MAX_CODE_LENGTH } from '../../src/constants'
 import type { ParsedReviewRequest } from '../../src/types/worker'
-
-const MAX_CODE_LENGTH = 80_000
 
 export function parseReviewRequest(payload: unknown): ParsedReviewRequest {
     if (!isRecord(payload)) {
@@ -9,22 +8,13 @@ export function parseReviewRequest(payload: unknown): ParsedReviewRequest {
     }
 
     const code = readRequiredString(payload.code, 'code')
-    const language = readOptionalString(payload.language, 'language')
-    const filename = readOptionalString(payload.filename, 'filename')
-
     if (!code.trim()) {
         throw new HTTPException(400, { message: 'Code cannot be empty.' })
     }
-
     if (code.length > MAX_CODE_LENGTH) {
         throw new HTTPException(413, { message: `Code cannot exceed ${MAX_CODE_LENGTH} characters.` })
     }
-
-    return {
-        code,
-        filename,
-        language,
-    }
+    return { code }
 }
 
 function readRequiredString(value: unknown, field: string): string {
@@ -33,19 +23,6 @@ function readRequiredString(value: unknown, field: string): string {
     }
 
     return value
-}
-
-function readOptionalString(value: unknown, field: string): string | undefined {
-    if (value === undefined) {
-        return undefined
-    }
-
-    if (typeof value !== 'string') {
-        throw new HTTPException(400, { message: `${field} must be a string when provided.` })
-    }
-
-    const trimmed = value.trim()
-    return trimmed || undefined
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {

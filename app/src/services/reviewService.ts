@@ -1,4 +1,5 @@
 import type { ReviewResult } from '../types/review'
+import { API_REVIEW_ENDPOINT } from '../constants'
 
 const readApiError = (body: unknown) => {
     if (typeof body === 'object' && body && 'error' in body && typeof body.error === 'string') {
@@ -9,7 +10,7 @@ const readApiError = (body: unknown) => {
 }
 
 export async function generateReview(code: string, signal?: AbortSignal): Promise<ReviewResult> {
-    const response = await fetch('/api/review', {
+    const response = await fetch(API_REVIEW_ENDPOINT, {
         body: JSON.stringify({ code }),
         headers: {
             'Content-Type': 'application/json',

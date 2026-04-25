@@ -1,16 +1,4 @@
-import type { ReviewCategory, ReviewSeverity } from '../../src/types/review'
-
-export const REVIEW_CATEGORIES = [
-    'correctness',
-    'security',
-    'performance',
-    'maintability',
-    'style',
-    'documentation',
-    'other',
-] as const satisfies ReviewCategory[]
-
-export const REVIEW_SEVERITIES = ['low', 'medium', 'high'] as const satisfies ReviewSeverity[]
+import { REVIEW_CATEGORIES, REVIEW_SEVERITIES } from '../../src/constants'
 
 export const reviewResponseSchema = {
     type: 'object',

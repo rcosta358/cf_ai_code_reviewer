@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import type { ReactNode } from 'react'
+import { DEFAULT_THEME, THEME_STORAGE_KEY } from '../constants'
 import { useLocalStorage } from '../hooks/useLocalStorage'
 import { ThemeContext } from './themeContextValue'
 import type { Theme, ThemeContextValue } from './themeContextValue'
@@ -9,7 +10,7 @@ type ThemeProviderProps = {
 }
 
 export function ThemeProvider({ children }: ThemeProviderProps) {
-    const [theme, setTheme] = useLocalStorage<Theme>('ai-code-reviewer-theme', 'light')
+    const [theme, setTheme] = useLocalStorage<Theme>(THEME_STORAGE_KEY, DEFAULT_THEME)
 
     const value = useMemo<ThemeContextValue>(
         () => ({

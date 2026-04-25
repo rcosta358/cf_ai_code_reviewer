@@ -1,44 +1,24 @@
 import { useMemo, useState } from 'react'
+import {
+    COPY_FEEDBACK_DURATION_MS,
+    HIGH_CONFIDENCE_THRESHOLD,
+    ISSUE_LEVEL_LABELS,
+    MEDIUM_CONFIDENCE_THRESHOLD,
+    REVIEW_CATEGORY_LABELS,
+    REVIEW_CATEGORY_ORDER,
+} from '../constants'
+import type { IssueLevelFilter } from '../constants'
 import { useReview } from '../hooks/useReview'
 import type { ReviewCategory, ReviewIssue, ReviewSeverity } from '../types/review'
 import { renderInlineHtml } from '../utils'
 import { Icon } from './Icon'
 
-type IssueLevelFilter = 'all' | ReviewSeverity
-
-const categoryLabels: Record<ReviewCategory, string> = {
-    correctness: 'Correctness',
-    security: 'Security',
-    performance: 'Performance',
-    maintability: 'Maintability',
-    style: 'Style',
-    documentation: 'Documentation',
-    other: 'Other',
-}
-
-const categoryOrder: ReviewCategory[] = [
-    'correctness',
-    'security',
-    'performance',
-    'maintability',
-    'style',
-    'documentation',
-    'other',
-]
-
-const issueLevelLabels: Record<IssueLevelFilter, string> = {
-    all: 'All',
-    high: 'High',
-    medium: 'Medium',
-    low: 'Low',
-}
-
 const getConfidenceLabel = (confidence: number) => {
-    if (confidence >= 0.8) {
+    if (confidence >= HIGH_CONFIDENCE_THRESHOLD) {
         return 'High'
     }
 
-    if (confidence >= 0.6) {
+    if (confidence >= MEDIUM_CONFIDENCE_THRESHOLD) {
         return 'Medium'
     }
 
@@ -56,7 +36,7 @@ const matchesConfidence = (issue: ReviewIssue, filter: IssueLevelFilter) => {
 
 const formatIssueForCopy = (issue: ReviewIssue) =>
     [
-        `${categoryLabels[issue.category]} / ${issue.severity.toUpperCase()} / ${getConfidenceLabel(issue.confidence)} confidence`,
+        `${REVIEW_CATEGORY_LABELS[issue.category]} / ${issue.severity.toUpperCase()} / ${getConfidenceLabel(issue.confidence)} confidence`,
         issue.line ? `Line ${issue.line}` : 'Line not provided',
         issue.title,
         issue.description,
@@ -95,7 +75,7 @@ export function ReviewResultsPanel() {
 
     const categoryCounts = useMemo(
         () =>
-            categoryOrder.reduce<Record<ReviewCategory, number>>(
+            REVIEW_CATEGORY_ORDER.reduce<Record<ReviewCategory, number>>(
                 (counts, category) => ({
                     ...counts,
                     [category]: visibleIssues.filter((issue) => issue.category === category).length,
@@ -130,13 +110,13 @@ export function ReviewResultsPanel() {
 
         await navigator.clipboard.writeText(formatIssuesForCopy(visibleIssues))
         setCopiedId('summary')
-        window.setTimeout(() => setCopiedId(null), 1400)
+        window.setTimeout(() => setCopiedId(null), COPY_FEEDBACK_DURATION_MS)
     }
 
     const handleCopyIssue = async (issue: ReviewIssue) => {
         await navigator.clipboard.writeText(formatIssueForCopy(issue))
         setCopiedId(issue.id)
-        window.setTimeout(() => setCopiedId(null), 1400)
+        window.setTimeout(() => setCopiedId(null), COPY_FEEDBACK_DURATION_MS)
     }
 
     return (
@@ -208,7 +188,7 @@ export function ReviewResultsPanel() {
                         <label>
               Severity
                             <select value={severityFilter} onChange={(event) => setSeverityFilter(event.target.value as IssueLevelFilter)}>
-                                {Object.entries(issueLevelLabels).map(([value, label]) => (
+                                {Object.entries(ISSUE_LEVEL_LABELS).map(([value, label]) => (
                                     <option key={value} value={value}>
                                         {label}
                                     </option>
@@ -222,7 +202,7 @@ export function ReviewResultsPanel() {
                                 value={confidenceFilter}
                                 onChange={(event) => setConfidenceFilter(event.target.value as IssueLevelFilter)}
                             >
-                                {Object.entries(issueLevelLabels).map(([value, label]) => (
+                                {Object.entries(ISSUE_LEVEL_LABELS).map(([value, label]) => (
                                     <option key={value} value={value}>
                                         {label}
                                     </option>
@@ -239,14 +219,14 @@ export function ReviewResultsPanel() {
                         >
               All <span>{visibleIssues.length}</span>
                         </button>
-                        {categoryOrder.map((category) => (
+                        {REVIEW_CATEGORY_ORDER.map((category) => (
                             <button
                                 className={`category-chip category-${category} ${activeCategory === category ? 'is-active' : ''}`}
                                 key={category}
                                 onClick={() => setActiveCategory(category)}
                                 type="button"
                             >
-                                {categoryLabels[category]} <span>{categoryCounts[category]}</span>
+                                {REVIEW_CATEGORY_LABELS[category]} <span>{categoryCounts[category]}</span>
                             </button>
                         ))}
                     </section>
@@ -268,7 +248,7 @@ export function ReviewResultsPanel() {
                                 <div className="issue-card-header">
                                     <div>
                                         <span className={`category-dot category-bg-${issue.category}`} />
-                                        <span>{categoryLabels[issue.category]}</span>
+                                        <span>{REVIEW_CATEGORY_LABELS[issue.category]}</span>
                                     </div>
                                     <span className={`severity-pill ${getSeverityClassName(issue.severity)}`}>{issue.severity}</span>
                                 </div>

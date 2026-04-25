@@ -5,14 +5,14 @@ Lightweight AI-powered code review application that uses Llama 3.3 to analyze co
 ## Features
 
 - One-shot code review with structured feedback
-- Covers multiple aspects of code quality (bugs, security, performance, etc.)
+- Covers multiple aspects of code quality (correctness, security, maintability, performance, etc.)
 - Each issue is annotated with a specific explanation and severity level, highlighting the position in the source code where the problem is located
 - Overall rating and summary of issues and suggestions for improvement, which can be copy pasted into a coding agent
 - Maintains review history and caches results for identical inputs
 
 ## Workflow
 
-1. User pastes code
+1. User pastes code into the editor and clicks the review button
 2. Backend checks for cached result
 3. If not cached, the backend sends the code to the LLM for analysis, with a predefined prompt that instructs how the LLM should analyze the code and how it should structure the response (JSON) 
 4. LLM returns structured feedback
@@ -26,12 +26,12 @@ This project is built using the Cloudflare ecosystem:
 - **Backend** (Cloudflare Workers) - handles requests and interacts with the LLM
 - **LLM** (Workers AI, Llama 3.3) - performs code analysis and generates feedback
 - **Data Storage** (Cloudflare KV) - stores review history and cached results
-- **Session Management** (Local Storage) - saves user sessions and preferences
+- **Session Storage** (Local Storage) - saves user sessions and preferences
 
 ## References
 
 - https://agents.cloudflare.com
 - https://workers.cloudflare.com
 - https://pages.cloudflare.com
-- https://developers.cloudflare.com/workers-ai/configuration/bindings
+- https://developers.cloudflare.com/workers-ai
 - https://developers.cloudflare.com/kv

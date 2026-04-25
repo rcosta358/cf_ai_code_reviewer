@@ -17,12 +17,34 @@ type CodeEditorProps = {
   onChange: (code: string) => void
 }
 
+function getLineSelectionRange(code: string, line: number) {
+    const targetLine = Math.max(Math.floor(line), 1)
+    let currentLine = 1
+    let start = 0
+
+    while (currentLine < targetLine) {
+        const nextLineIndex = code.indexOf('\n', start)
+
+        if (nextLineIndex === -1) {
+            return { end: code.length, start: code.length }
+        }
+
+        start = nextLineIndex + 1
+        currentLine += 1
+    }
+
+    const nextLineIndex = code.indexOf('\n', start)
+    const lineEnd = nextLineIndex === -1 ? code.length : nextLineIndex
+    const end = lineEnd > start ? lineEnd : Math.min(start + 1, code.length)
+
+    return { end, start }
+}
+
 export function CodeEditor({ code, disabled = false, focusedLine, onChange, onCursorPositionChange }: CodeEditorProps) {
     const lineNumberRef = useRef<HTMLTextAreaElement>(null)
     const textareaRef = useRef<HTMLTextAreaElement>(null)
     const [copied, setCopied] = useState(false)
     const [editorMetrics, setEditorMetrics] = useState(DEFAULT_EDITOR_METRICS)
-    const [scrollTop, setScrollTop] = useState(0)
     const { language } = useCodeHighlight(code)
     const { captureCursor, cursorPosition } = useCursorPosition(code)
     const hasCode = code.length > 0
@@ -76,7 +98,11 @@ export function CodeEditor({ code, disabled = false, focusedLine, onChange, onCu
         const nextScrollTop = Math.max((focusedLine - 2) * editorMetrics.lineHeight, 0)
         textareaRef.current.scrollTo({ top: nextScrollTop, behavior: 'smooth' })
         textareaRef.current.focus({ preventScroll: true })
-    }, [editorMetrics.lineHeight, focusedLine])
+
+        const { end, start } = getLineSelectionRange(code, focusedLine)
+        textareaRef.current.setSelectionRange(start, end)
+        captureCursor(textareaRef.current)
+    }, [captureCursor, code, editorMetrics.lineHeight, focusedLine])
 
     const handleCopy = async () => {
         if (!code) {
@@ -102,16 +128,6 @@ export function CodeEditor({ code, disabled = false, focusedLine, onChange, onCu
             </div>
 
             <div className="code-editor">
-                {focusedLine && (
-                    <div
-                        className="active-line-highlight"
-                        style={{
-                            height: editorMetrics.lineHeight,
-                            top: editorMetrics.paddingTop + (focusedLine - 1) * editorMetrics.lineHeight - scrollTop,
-                        }}
-                    />
-                )}
-
                 <textarea
                     aria-hidden="true"
                     className="line-number-gutter"
@@ -138,8 +154,6 @@ export function CodeEditor({ code, disabled = false, focusedLine, onChange, onCu
                     onKeyUp={(event) => captureCursor(event.currentTarget)}
                     onSelect={(event) => captureCursor(event.currentTarget)}
                     onScroll={(event) => {
-                        setScrollTop(event.currentTarget.scrollTop)
-
                         if (lineNumberRef.current) {
                             lineNumberRef.current.scrollTop = event.currentTarget.scrollTop
                         }

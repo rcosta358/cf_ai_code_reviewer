@@ -572,6 +572,11 @@ h3 {
   animation: spin 900ms linear infinite;
 }
 
+.sparkle-emoji {
+  display: inline-block;
+  filter: brightness(0) invert(1);
+}
+
 @keyframes spin {
   to {
     transform: rotate(360deg);

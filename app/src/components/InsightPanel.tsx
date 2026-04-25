@@ -65,7 +65,7 @@ export function InsightPanel({ isCollapsed, onToggleCollapse }: InsightPanelProp
                     <div className="empty-state">
                         <span className="status-pill">Soon</span>
                         <h3>Review history</h3>
-                        <p>Past results for this session will be listed here once persistence is connected.</p>
+                        <p>Past results for this session will be listed here.</p>
                     </div>
                 )}
             </div>}

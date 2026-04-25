@@ -124,9 +124,9 @@ export function ReviewResultsPanel() {
             <div className="review-action-panel">
                 <button className="primary-button" disabled={!canSubmit} onClick={handleSubmitReview} type="button">
                     <span className={isGeneratingReview ? 'spinner-icon' : ''}>
-                        <Icon name={isGeneratingReview ? 'loader' : 'send'} />
+                        {isGeneratingReview ? <Icon name="loader" /> : <span aria-hidden="true" className="sparkle-emoji">✨</span>}
                     </span>
-                    {isGeneratingReview ? 'Generating review' : 'Generate review'}
+                    {isGeneratingReview ? 'Reviewing...' : 'Start Review'}
                 </button>
 
                 {isGeneratingReview && (
@@ -147,7 +147,7 @@ export function ReviewResultsPanel() {
                 <div className="empty-state">
                     <span className="status-pill">Pending</span>
                     <h3>No review yet</h3>
-                    <p>Generated review results will appear here with severity, confidence, line, and suggestion details.</p>
+                    <p>Ask for a code review to look for potential issues and suggestions for a code snippet.</p>
                 </div>
             )}
 

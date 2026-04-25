@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { useReview } from '../hooks/useReview'
 import type { ReviewCategory, ReviewIssue, ReviewSeverity } from '../types/review'
+import { renderInlineHtml } from '../utils'
 import { Icon } from './Icon'
 
 type IssueLevelFilter = 'all' | ReviewSeverity
@@ -63,6 +64,10 @@ const formatIssueForCopy = (issue: ReviewIssue) =>
   ].join('\n')
 
 const getSeverityClassName = (severity: ReviewSeverity) => `severity-${severity}`
+
+function InlineFormattedText({ text }: { text: string }) {
+  return <>{renderInlineHtml(text)}</>
+}
 
 export function ReviewResultsPanel() {
   const {
@@ -184,7 +189,9 @@ export function ReviewResultsPanel() {
             </div>
 
             <div className="agent-summary">
-              <p>{review.summary}</p>
+              <p>
+                <InlineFormattedText text={review.summary} />
+              </p>
               <button className="secondary-button" onClick={handleCopySummary} type="button">
                 <Icon name={copiedId === 'summary' ? 'check' : 'copy'} />
                 {copiedId === 'summary' ? 'Copied' : 'Copy summary'}
@@ -261,8 +268,12 @@ export function ReviewResultsPanel() {
                   <span className={`severity-pill ${getSeverityClassName(issue.severity)}`}>{issue.severity}</span>
                 </div>
 
-                <h3>{issue.title}</h3>
-                <p>{issue.description}</p>
+                <h3>
+                  <InlineFormattedText text={issue.title} />
+                </h3>
+                <p>
+                  <InlineFormattedText text={issue.description} />
+                </p>
 
                 <div className="issue-meta">
                   <span>{issue.line ? `Line ${issue.line}` : 'No line'}</span>
@@ -271,7 +282,9 @@ export function ReviewResultsPanel() {
 
                 <div className="issue-suggestion">
                   <strong>Suggested fix</strong>
-                  <p>{issue.suggestion}</p>
+                  <p>
+                    <InlineFormattedText text={issue.suggestion} />
+                  </p>
                 </div>
 
                 <div className="issue-actions">

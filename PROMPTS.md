@@ -19,3 +19,6 @@ This file contains the prompts used for Codex with GPT-5.5 (Medium). An `AGENTS.
 > the labels should be: correctness, security, performance, maintability, style, documentation, and other. the severity and confidence levels should be: low, medium and high.
 
 > fix this: Maximum update depth exceeded. This can happen when a component calls setState inside useEffect, but useEffect either doesn't have a dependency array, or one of the dependencies changes on every render.
+
+> the line highlighting is slightly offset vertically, it needs to match the position exactly with the line. fix it.
+

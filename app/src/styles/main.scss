@@ -285,6 +285,8 @@ h3 {
 
 .code-editor {
   --editor-gutter-width: 58px;
+  --editor-font-size: 0.94rem;
+  --editor-line-height: 1.65;
 
   position: relative;
   min-height: 0;
@@ -302,8 +304,8 @@ h3 {
   border: 0;
   padding: 22px;
   font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
-  font-size: 0.94rem;
-  line-height: 1.65;
+  font-size: var(--editor-font-size);
+  line-height: var(--editor-line-height);
   tab-size: 2;
 }
 
@@ -318,14 +320,14 @@ h3 {
   color: var(--faint);
   background: color-mix(in srgb, var(--panel-muted) 62%, transparent);
   font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
-  font-size: 0.84rem;
-  line-height: 1.65;
+  font-size: var(--editor-font-size);
+  line-height: var(--editor-line-height);
   text-align: right;
   user-select: none;
 
   span {
     display: block;
-    height: 1.551rem;
+    height: 1.65em;
 
     &.is-focused {
       color: var(--primary-strong);
@@ -339,7 +341,6 @@ h3 {
   left: var(--editor-gutter-width);
   right: 0;
   z-index: 0;
-  height: 1.551rem;
   background: color-mix(in srgb, var(--primary-soft) 72%, transparent);
   pointer-events: none;
 }

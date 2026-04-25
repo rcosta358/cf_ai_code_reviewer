@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { useCodeHighlight } from '../hooks/useCodeHighlight'
 import { useCursorPosition } from '../hooks/useCursorPosition'
 import { Icon } from './Icon'
@@ -16,14 +16,22 @@ type CodeEditorProps = {
   onChange: (code: string) => void
 }
 
-const EDITOR_LINE_HEIGHT_PX = 24.82
-const EDITOR_VERTICAL_PADDING_PX = 22
+type EditorMetrics = {
+  lineHeight: number
+  paddingTop: number
+}
+
+const DEFAULT_EDITOR_METRICS: EditorMetrics = {
+  lineHeight: 24,
+  paddingTop: 22,
+}
 
 export function CodeEditor({ code, disabled = false, focusedLine, onChange, onCursorPositionChange }: CodeEditorProps) {
   const highlightRef = useRef<HTMLElement>(null)
   const lineNumberRef = useRef<HTMLDivElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const [copied, setCopied] = useState(false)
+  const [editorMetrics, setEditorMetrics] = useState(DEFAULT_EDITOR_METRICS)
   const [scrollTop, setScrollTop] = useState(0)
   const { highlightedCode, language } = useCodeHighlight(code)
   const { captureCursor, cursorPosition } = useCursorPosition(code)
@@ -34,15 +42,41 @@ export function CodeEditor({ code, disabled = false, focusedLine, onChange, onCu
     onCursorPositionChange(cursorPosition)
   }, [cursorPosition, onCursorPositionChange])
 
+  useLayoutEffect(() => {
+    const textarea = textareaRef.current
+
+    if (!textarea) {
+      return
+    }
+
+    const syncEditorMetrics = () => {
+      const style = window.getComputedStyle(textarea)
+      const lineHeight = Number.parseFloat(style.lineHeight)
+      const paddingTop = Number.parseFloat(style.paddingTop)
+
+      setEditorMetrics({
+        lineHeight: Number.isFinite(lineHeight) ? lineHeight : DEFAULT_EDITOR_METRICS.lineHeight,
+        paddingTop: Number.isFinite(paddingTop) ? paddingTop : DEFAULT_EDITOR_METRICS.paddingTop,
+      })
+    }
+
+    syncEditorMetrics()
+
+    const resizeObserver = new ResizeObserver(syncEditorMetrics)
+    resizeObserver.observe(textarea)
+
+    return () => resizeObserver.disconnect()
+  }, [])
+
   useEffect(() => {
     if (!focusedLine || !textareaRef.current) {
       return
     }
 
-    const nextScrollTop = Math.max((focusedLine - 2) * EDITOR_LINE_HEIGHT_PX, 0)
+    const nextScrollTop = Math.max((focusedLine - 2) * editorMetrics.lineHeight, 0)
     textareaRef.current.scrollTo({ top: nextScrollTop, behavior: 'smooth' })
     textareaRef.current.focus({ preventScroll: true })
-  }, [focusedLine])
+  }, [editorMetrics.lineHeight, focusedLine])
 
   const handleCopy = async () => {
     if (!code) {
@@ -72,7 +106,8 @@ export function CodeEditor({ code, disabled = false, focusedLine, onChange, onCu
           <div
             className="active-line-highlight"
             style={{
-              top: EDITOR_VERTICAL_PADDING_PX + (focusedLine - 1) * EDITOR_LINE_HEIGHT_PX - scrollTop,
+              height: editorMetrics.lineHeight,
+              top: editorMetrics.paddingTop + (focusedLine - 1) * editorMetrics.lineHeight - scrollTop,
             }}
           />
         )}

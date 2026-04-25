@@ -2,10 +2,10 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 import { ReviewContext } from './reviewContextValue'
 import type { ReviewContextValue } from './reviewContextValue'
+import { generateReview } from '../services/reviewService'
 import type {
   ReviewGenerationMessage,
   ReviewGenerationStatus,
-  ReviewResult,
   ReviewSession,
 } from '../types/review'
 
@@ -38,14 +38,6 @@ const createInitialSession = (): ReviewSession => {
 }
 
 const REVIEW_GENERATION_TIMEOUT_MS = 30000
-
-const readApiError = (body: unknown) => {
-  if (typeof body === 'object' && body && 'error' in body && typeof body.error === 'string') {
-    return body.error
-  }
-
-  return 'Review generation failed.'
-}
 
 const getErrorMessage = (error: unknown) => {
   if (error instanceof Error && error.message) {
@@ -155,22 +147,7 @@ export function ReviewProvider({ children }: ReviewProviderProps) {
     }, REVIEW_GENERATION_TIMEOUT_MS)
 
     try {
-      const response = await fetch('/api/review', {
-        body: JSON.stringify({ code: submittedCode }),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        method: 'POST',
-        signal: abortController.signal,
-      })
-
-      const body = await response.json().catch(() => null)
-
-      if (!response.ok) {
-        throw new Error(readApiError(body))
-      }
-
-      const review = body as ReviewResult
+      const review = await generateReview(submittedCode, abortController.signal)
 
       setSessions((currentSessions) =>
         currentSessions.map((session, index) =>

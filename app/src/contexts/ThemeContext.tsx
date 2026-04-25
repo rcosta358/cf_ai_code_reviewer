@@ -9,21 +9,21 @@ type ThemeProviderProps = {
 }
 
 export function ThemeProvider({ children }: ThemeProviderProps) {
-  const [theme, setTheme] = useLocalStorage<Theme>('ai-code-reviewer-theme', 'light')
+    const [theme, setTheme] = useLocalStorage<Theme>('ai-code-reviewer-theme', 'light')
 
-  const value = useMemo<ThemeContextValue>(
-    () => ({
-      theme,
-      toggleTheme: () => setTheme((currentTheme) => (currentTheme === 'light' ? 'dark' : 'light')),
-    }),
-    [setTheme, theme],
-  )
+    const value = useMemo<ThemeContextValue>(
+        () => ({
+            theme,
+            toggleTheme: () => setTheme((currentTheme) => (currentTheme === 'light' ? 'dark' : 'light')),
+        }),
+        [setTheme, theme],
+    )
 
-  return (
-    <ThemeContext.Provider value={value}>
-      <div className="theme-root" data-theme={theme}>
-        {children}
-      </div>
-    </ThemeContext.Provider>
-  )
+    return (
+        <ThemeContext.Provider value={value}>
+            <div className="theme-root" data-theme={theme}>
+                {children}
+            </div>
+        </ThemeContext.Provider>
+    )
 }

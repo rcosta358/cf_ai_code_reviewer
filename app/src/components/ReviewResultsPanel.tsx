@@ -234,8 +234,8 @@ export function ReviewResultsPanel() {
                     <section className="issue-list" aria-label="Review issues">
                         {filteredIssues.length === 0 && (
                             <div className="empty-state compact-empty">
-                                <h3>No matching issues</h3>
-                                <p>Adjust the category, severity, or confidence filters to see more results.</p>
+                                <h3>No issues</h3>
+                                <p>Try changing the filters to see more results.</p>
                             </div>
                         )}
 

@@ -32,7 +32,7 @@ export function SessionSidebar({ isCollapsed, onToggleCollapse }: SessionSidebar
                     )}
                     <button
                         aria-label={isCollapsed ? 'Expand sessions panel' : 'Collapse sessions panel'}
-                        className="icon-button"
+                        className="icon-button collapse-toggle"
                         onClick={onToggleCollapse}
                         type="button"
                     >

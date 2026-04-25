@@ -26,7 +26,7 @@ export function InsightPanel({ isCollapsed, onToggleCollapse }: InsightPanelProp
                 </div>
                 <button
                     aria-label={isCollapsed ? 'Expand review panel' : 'Collapse review panel'}
-                    className="icon-button"
+                    className="icon-button collapse-toggle"
                     onClick={onToggleCollapse}
                     type="button"
                 >

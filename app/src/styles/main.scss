@@ -254,6 +254,10 @@ h3 {
   }
 }
 
+.collapse-toggle .icon {
+  transition: transform 160ms ease;
+}
+
 .workspace {
   display: flex;
   height: 100%;
@@ -1067,12 +1071,27 @@ h3 {
 }
 
 @media (max-width: 760px) {
+  html,
+  body,
+  #root {
+    height: auto;
+    min-height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  .theme-root {
+    height: auto;
+    min-height: 100svh;
+    overflow: visible;
+  }
+
   .app-shell {
     display: flex;
     flex-direction: column;
-    height: 100%;
-    min-height: 0;
-    overflow: hidden;
+    height: auto;
+    min-height: 100svh;
+    overflow: visible;
     padding: 10px;
   }
 
@@ -1087,15 +1106,20 @@ h3 {
   }
 
   .workspace {
-    flex: 1 1 auto;
+    flex: 0 0 auto;
+    min-height: 620px;
   }
 
   .theme-toggle {
     align-self: flex-end;
   }
 
+  .collapse-toggle .icon {
+    transform: rotate(90deg);
+  }
+
   .code-editor {
-    min-height: 0;
+    min-height: 360px;
   }
 
   .primary-button {
@@ -1103,13 +1127,21 @@ h3 {
   }
 
   .session-sidebar {
-    flex: 0 0 min(220px, 24svh);
-    max-height: none;
+    flex: 0 0 auto;
+    max-height: 260px;
   }
 
   .insight-panel {
-    flex: 0 0 min(320px, 34svh);
-    min-height: 0;
+    flex: 0 0 auto;
+    min-height: 320px;
+  }
+
+  .sidebar.is-collapsed {
+    align-items: stretch;
+
+    .panel-header {
+      justify-content: flex-end;
+    }
   }
 
   .view-tabs button {

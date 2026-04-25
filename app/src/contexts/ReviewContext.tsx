@@ -174,9 +174,9 @@ export function ReviewProvider({ children }: ReviewProviderProps) {
                 tone: wasAborted && abortReason === 'cancel' ? 'info' : 'warning',
                 text:
           wasAborted && abortReason === 'timeout'
-              ? `Review generation timed out after ${REVIEW_GENERATION_TIMEOUT_SECONDS} seconds and was cancelled.`
+              ? `Review timed out after ${REVIEW_GENERATION_TIMEOUT_SECONDS} seconds.`
               : wasAborted
-                  ? 'Review generation was cancelled.'
+                  ? 'Review was cancelled.'
                   : getErrorMessage(error),
             })
         } finally {

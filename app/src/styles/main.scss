@@ -93,6 +93,11 @@ button:disabled {
   min-height: 0;
   overflow: hidden;
   padding: 16px;
+  transition: grid-template-columns 220ms ease;
+}
+
+.is-resizing-panel .app-shell {
+  transition: none;
 }
 
 .sidebar,
@@ -111,6 +116,10 @@ button:disabled {
   overflow: hidden;
   overflow-x: hidden;
   padding: 18px;
+  transition:
+    padding 220ms ease,
+    border-color 220ms ease,
+    box-shadow 220ms ease;
 
   &.is-collapsed {
     align-items: center;
@@ -143,6 +152,10 @@ button:disabled {
   width: 12px;
   cursor: col-resize;
   touch-action: none;
+  transition:
+    left 220ms ease,
+    right 220ms ease,
+    opacity 160ms ease;
 
   &::before {
     position: absolute;
@@ -172,6 +185,18 @@ button:disabled {
 .is-resizing-panel {
   cursor: col-resize;
   user-select: none;
+
+  .panel-resize-handle {
+    transition: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-shell,
+  .sidebar,
+  .panel-resize-handle {
+    transition: none;
+  }
 }
 
 .panel-header,

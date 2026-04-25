@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 
 type CursorPosition = {
   column: number
@@ -17,7 +17,10 @@ const getCursorPosition = (code: string, cursorIndex: number): CursorPosition =>
 
 export function useCursorPosition(code: string) {
   const [cursorIndex, setCursorIndex] = useState(0)
-  const cursorPosition = getCursorPosition(code, Math.min(cursorIndex, code.length))
+  const cursorPosition = useMemo(
+    () => getCursorPosition(code, Math.min(cursorIndex, code.length)),
+    [code, cursorIndex],
+  )
 
   const captureCursor = useCallback((element: HTMLTextAreaElement) => {
     setCursorIndex(element.selectionStart)

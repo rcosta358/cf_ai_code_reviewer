@@ -8,7 +8,11 @@ export function CodeReviewWorkspace() {
   const { activeSession, focusedSourceLine, isGeneratingReview, updateCode } = useReview()
   const [cursorPosition, setCursorPosition] = useState<EditorCursorPosition>({ column: 1, line: 1 })
   const handleCursorPositionChange = useCallback((nextCursorPosition: EditorCursorPosition) => {
-    setCursorPosition(nextCursorPosition)
+    setCursorPosition((currentCursorPosition) =>
+      currentCursorPosition.line === nextCursorPosition.line && currentCursorPosition.column === nextCursorPosition.column
+        ? currentCursorPosition
+        : nextCursorPosition,
+    )
   }, [])
 
   return (

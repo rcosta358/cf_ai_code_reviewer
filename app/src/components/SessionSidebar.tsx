@@ -34,7 +34,7 @@ export function SessionSidebar() {
           >
             <span className="session-title">{session.title}</span>
             <span className="session-meta">
-              {session.reviewResult ? 'Reviewed' : 'Draft'} · {formatSessionTime(session.updatedAt)}
+              {session.result ? 'Reviewed' : 'Draft'} · {formatSessionTime(session.updatedAt)}
             </span>
           </button>
         ))}

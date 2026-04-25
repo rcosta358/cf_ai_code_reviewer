@@ -34,7 +34,7 @@ const createInitialSession = (): ReviewSession => {
     code: '',
     createdAt: now,
     updatedAt: now,
-    reviewResult: null,
+    result: null,
   }
 }
 
@@ -134,12 +134,9 @@ const createExampleReview = (code: string): ReviewResult => {
   return {
     id: createId('review'),
     createdAt: new Date().toISOString(),
-    overallRating: 'Needs attention',
-    score: 72,
+    score: 7,
     summary:
       'The implementation is directionally solid, but it needs stronger validation, clearer rendering boundaries, and coverage around asynchronous review behavior.',
-    agentSummary:
-      'Please address the highest-risk findings first: add input guards, keep model output rendering safe, memoize expensive derived data, separate backend review state from display formatting, and add tests for submit/cancel/timeout flows.',
     issues,
   }
 }
@@ -197,7 +194,7 @@ export function ReviewProvider({ children }: ReviewProviderProps) {
             ? {
                 ...session,
                 code,
-                title: session.reviewResult ? session.title : createSessionTitle(code, index + 1),
+                title: session.result ? session.title : createSessionTitle(code, index + 1),
                 updatedAt: new Date().toISOString(),
               }
             : session,
@@ -240,7 +237,7 @@ export function ReviewProvider({ children }: ReviewProviderProps) {
                 ...session,
                 title: createSessionTitle(session.code, index + 1),
                 updatedAt: new Date().toISOString(),
-                reviewResult: createExampleReview(session.code),
+                result: createExampleReview(session.code),
               }
             : session,
         ),
@@ -266,12 +263,12 @@ export function ReviewProvider({ children }: ReviewProviderProps) {
     (issueId: string) => {
       setSessions((currentSessions) =>
         currentSessions.map((session) =>
-          session.id === activeSessionId && session.reviewResult
+          session.id === activeSessionId && session.result
             ? {
                 ...session,
-                reviewResult: {
-                  ...session.reviewResult,
-                  issues: session.reviewResult.issues.map((issue) =>
+                result: {
+                  ...session.result,
+                  issues: session.result.issues.map((issue) =>
                     issue.id === issueId ? { ...issue, dismissed: true } : issue,
                   ),
                 },

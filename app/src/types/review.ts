@@ -24,10 +24,8 @@ export type ReviewIssue = {
 export type ReviewResult = {
   id: string
   createdAt: string
-  overallRating: 'Needs attention' | 'Good' | 'Strong'
-  agentSummary: string
-  summary: string
   score: number
+  summary: string
   issues: ReviewIssue[]
 }
 
@@ -37,7 +35,7 @@ export type ReviewSession = {
   code: string
   createdAt: string
   updatedAt: string
-  reviewResult: ReviewResult | null
+  result: ReviewResult | null
 }
 
 export type RightPanelView = 'review' | 'chat' | 'history'

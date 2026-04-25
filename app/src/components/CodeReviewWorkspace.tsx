@@ -30,7 +30,7 @@ export function CodeReviewWorkspace() {
           onCursorPositionChange={handleCursorPositionChange}
         />
         <div className="editor-actions">
-          <p>{activeSession.reviewResult ? 'Latest review is saved in this session.' : 'Each session keeps its own code and review state.'}</p>
+          <p>{activeSession.result ? 'Latest review is saved in this session.' : 'Each session keeps its own code and review state.'}</p>
           <span className="cursor-position">
             Ln {cursorPosition.line}, Col {cursorPosition.column}
           </span>

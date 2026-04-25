@@ -79,7 +79,7 @@ export function ReviewResultsPanel() {
   const [copiedId, setCopiedId] = useState<string | null>(null)
   const [severityFilter, setSeverityFilter] = useState<IssueLevelFilter>('all')
 
-  const review = activeSession.reviewResult
+  const review = activeSession.result
   const visibleIssues = useMemo(() => review?.issues.filter((issue) => !issue.dismissed) ?? [], [review])
   const canSubmit = activeSession.code.trim().length > 0 && !isGeneratingReview
 
@@ -118,7 +118,7 @@ export function ReviewResultsPanel() {
       return
     }
 
-    await navigator.clipboard.writeText(review.agentSummary)
+    await navigator.clipboard.writeText(review.summary)
     setCopiedId('summary')
     window.setTimeout(() => setCopiedId(null), 1400)
   }
@@ -175,43 +175,21 @@ export function ReviewResultsPanel() {
             <div className="summary-grid">
               <div>
                 <span className="summary-value">{visibleIssues.length}</span>
-                <span className="summary-label">Open issues</span>
+                <span className="summary-label">Issues</span>
               </div>
               <div>
-                <span className="summary-value">{review.score}/100</span>
-                <span className="summary-label">{review.overallRating}</span>
+                <span className="summary-value">{review.score}/10</span>
+                <span className="summary-label">Score</span>
               </div>
             </div>
 
-            <p>{review.summary}</p>
-
             <div className="agent-summary">
-              <p>{review.agentSummary}</p>
+              <p>{review.summary}</p>
               <button className="secondary-button" onClick={handleCopySummary} type="button">
                 <Icon name={copiedId === 'summary' ? 'check' : 'copy'} />
                 {copiedId === 'summary' ? 'Copied' : 'Copy summary'}
               </button>
             </div>
-          </section>
-
-          <section className="category-filter" aria-label="Issue categories">
-            <button
-              className={`category-chip category-all ${activeCategory === 'all' ? 'is-active' : ''}`}
-              onClick={() => setActiveCategory('all')}
-              type="button"
-            >
-              All <span>{visibleIssues.length}</span>
-            </button>
-            {categoryOrder.map((category) => (
-              <button
-                className={`category-chip category-${category} ${activeCategory === category ? 'is-active' : ''}`}
-                key={category}
-                onClick={() => setActiveCategory(category)}
-                type="button"
-              >
-                {categoryLabels[category]} <span>{categoryCounts[category]}</span>
-              </button>
-            ))}
           </section>
 
           <section className="review-filters" aria-label="Review filters">
@@ -239,6 +217,26 @@ export function ReviewResultsPanel() {
                 ))}
               </select>
             </label>
+          </section>
+
+          <section className="category-filter" aria-label="Issue categories">
+            <button
+              className={`category-chip category-all ${activeCategory === 'all' ? 'is-active' : ''}`}
+              onClick={() => setActiveCategory('all')}
+              type="button"
+            >
+              All <span>{visibleIssues.length}</span>
+            </button>
+            {categoryOrder.map((category) => (
+              <button
+                className={`category-chip category-${category} ${activeCategory === category ? 'is-active' : ''}`}
+                key={category}
+                onClick={() => setActiveCategory(category)}
+                type="button"
+              >
+                {categoryLabels[category]} <span>{categoryCounts[category]}</span>
+              </button>
+            ))}
           </section>
 
           <section className="issue-list" aria-label="Review issues">

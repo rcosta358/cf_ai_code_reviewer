@@ -332,6 +332,10 @@ h3 {
   &:focus {
     outline: none;
   }
+
+  &:disabled {
+    cursor: progress;
+  }
 }
 
 .code-highlight {
@@ -462,6 +466,18 @@ h3 {
   }
 }
 
+.spinner-icon {
+  display: inline-grid;
+  place-items: center;
+  animation: spin 900ms linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .session-list {
   display: flex;
   min-height: 0;
@@ -559,9 +575,30 @@ h3 {
   width: 100%;
   gap: 14px;
 
-  .primary-button {
+  .primary-button,
+  .cancel-button {
     width: 100%;
   }
+}
+
+.review-message {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  color: var(--text);
+  background: var(--panel-muted);
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.review-message-warning {
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
+  background: color-mix(in srgb, var(--accent) 14%, var(--panel));
+}
+
+.review-message-info {
+  border-color: color-mix(in srgb, var(--primary) 38%, var(--border));
+  background: color-mix(in srgb, var(--primary-soft) 72%, var(--panel));
 }
 
 .empty-state {

@@ -1,8 +1,12 @@
 import { createContext } from 'react'
-import type { ReviewSession } from '../types/review'
+import type { ReviewGenerationMessage, ReviewGenerationStatus, ReviewSession } from '../types/review'
 
 export type ReviewContextValue = {
   activeSession: ReviewSession
+  cancelReview: () => void
+  generationMessage: ReviewGenerationMessage | null
+  generationStatus: ReviewGenerationStatus
+  isGeneratingReview: boolean
   sessions: ReviewSession[]
   createSession: () => void
   selectSession: (sessionId: string) => void

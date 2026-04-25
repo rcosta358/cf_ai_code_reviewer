@@ -10,7 +10,7 @@ const languageLabels: Record<string, string> = {
   json: 'JSON',
   bash: 'Shell',
   shell: 'Shell',
-  plaintext: 'Plain text',
+  plaintext: 'Plain Text',
 }
 
 export function useCodeHighlight(code: string) {
@@ -18,16 +18,15 @@ export function useCodeHighlight(code: string) {
     if (!code.trim()) {
       return {
         highlightedCode: '',
-        language: 'Plain text',
+        language: 'Plain Text',
       }
     }
 
     const result = hljs.highlightAuto(code)
     const detectedLanguage = result.language ?? 'plaintext'
-
     return {
       highlightedCode: result.value,
-      language: languageLabels[detectedLanguage] ?? detectedLanguage,
+      language: languageLabels[detectedLanguage] ?? detectedLanguage[0].toUpperCase() + detectedLanguage.slice(1),
     }
   }, [code])
 }

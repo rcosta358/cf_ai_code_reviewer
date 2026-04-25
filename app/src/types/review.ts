@@ -27,3 +27,10 @@ export type ReviewSession = {
 }
 
 export type RightPanelView = 'review' | 'chat' | 'history'
+
+export type ReviewGenerationStatus = 'idle' | 'loading'
+
+export type ReviewGenerationMessage = {
+  tone: 'info' | 'warning'
+  text: string
+}

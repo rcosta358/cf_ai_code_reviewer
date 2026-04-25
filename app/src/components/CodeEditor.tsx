@@ -10,11 +10,12 @@ export type EditorCursorPosition = {
 
 type CodeEditorProps = {
   code: string
+  disabled?: boolean
   onCursorPositionChange: (cursorPosition: EditorCursorPosition) => void
   onChange: (code: string) => void
 }
 
-export function CodeEditor({ code, onChange, onCursorPositionChange }: CodeEditorProps) {
+export function CodeEditor({ code, disabled = false, onChange, onCursorPositionChange }: CodeEditorProps) {
   const highlightRef = useRef<HTMLElement>(null)
   const lineNumberRef = useRef<HTMLDivElement>(null)
   const [copied, setCopied] = useState(false)
@@ -66,6 +67,7 @@ export function CodeEditor({ code, onChange, onCursorPositionChange }: CodeEdito
         <textarea
           aria-label="Paste code for review"
           className={`code-input ${hasCode ? 'has-code' : ''}`}
+          disabled={disabled}
           onChange={(event) => {
             onChange(event.target.value)
             captureCursor(event.target)
@@ -86,7 +88,7 @@ export function CodeEditor({ code, onChange, onCursorPositionChange }: CodeEdito
               lineNumberRef.current.scrollTop = event.currentTarget.scrollTop
             }
           }}
-          placeholder="Paste a function, component, diff, or file here..."
+          placeholder="Paste your code here to get an AI review"
           spellCheck={false}
           value={code}
           wrap="off"

@@ -10,10 +10,10 @@ const views: Array<{ id: RightPanelView; label: string; icon: 'history' | 'messa
 ]
 
 export function InsightPanel() {
-  const { activeSession, submitReview } = useReview()
+  const { activeSession, cancelReview, generationMessage, isGeneratingReview, submitReview } = useReview()
   const [activeView, setActiveView] = useState<RightPanelView>('review')
   const review = activeSession.reviewResult
-  const canSubmit = activeSession.code.trim().length > 0
+  const canSubmit = activeSession.code.trim().length > 0 && !isGeneratingReview
 
   const handleSubmitReview = () => {
     submitReview()
@@ -49,14 +49,37 @@ export function InsightPanel() {
         {activeView === 'review' && (
           <div className="review-action-panel">
             <button className="primary-button" disabled={!canSubmit} onClick={handleSubmitReview} type="button">
-              <Icon name="send" />
-              Generate review
+              <span className={isGeneratingReview ? 'spinner-icon' : ''}>
+                <Icon name={isGeneratingReview ? 'loader' : 'send'} />
+              </span>
+              {isGeneratingReview ? 'Generating review' : 'Generate review'}
             </button>
 
+            {isGeneratingReview && (
+              <button className="secondary-button cancel-button" onClick={cancelReview} type="button">
+                <Icon name="x" />
+                Cancel
+              </button>
+            )}
+
+            {generationMessage && (
+              <p className={`review-message review-message-${generationMessage.tone}`} role="status">
+                {generationMessage.text}
+              </p>
+            )}
+
             <div className="empty-state">
-              <span className="status-pill">{review ? `${review.score}/100` : 'Pending'}</span>
-              <h3>{review ? 'Review captured' : 'No review yet'}</h3>
-              <p>{review ? review.summary : 'Generated review results will appear here with severity, line, and suggestion details.'}</p>
+              <span className="status-pill">
+                {isGeneratingReview ? 'Running' : review ? `${review.score}/100` : 'Pending'}
+              </span>
+              <h3>{isGeneratingReview ? 'Generating review' : review ? 'Review captured' : 'No review yet'}</h3>
+              <p>
+                {isGeneratingReview
+                  ? 'Analyzing this snippet now. You can cancel the request if you need to edit the code.'
+                  : review
+                    ? review.summary
+                    : 'Generated review results will appear here with severity, line, and suggestion details.'}
+              </p>
             </div>
           </div>
         )}

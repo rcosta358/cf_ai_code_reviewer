@@ -9,3 +9,5 @@ This file contains the prompts used for Codex with GPT-5.5 (Medium). An `AGENTS.
 > actually remove number of chars and put the cursor position in the footer where the generate review button is, and move it to the review side panel.
 
 > remove number of lines and add line numbers on the left of the textarea
+
+> add a loading state to the generate review button and disable it and the textarea while the review is being generated, also add a cancel button which is visible while loading. add a timeout of 10 seconds to the review generation, after which it will automatically cancel and show a message to the user. also handle the case where the user manually cancels the review generation and show a message in that case as well.

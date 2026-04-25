@@ -11,3 +11,9 @@ This file contains the prompts used for Codex with GPT-5.5 (Medium). An `AGENTS.
 > remove number of lines and add line numbers on the left of the textarea
 
 > add a loading state to the generate review button and disable it and the textarea while the review is being generated, also add a cancel button which is visible while loading. add a timeout of 10 seconds to the review generation, after which it will automatically cancel and show a message to the user. also handle the case where the user manually cancels the review generation and show a message in that case as well.
+
+> implement the review side panel. it should display the review results in a clear and actionable way. for now add hardcoded examples to later be removed. this view displays at the top the total number of issues or suggestions, overall rating and summary of issues and suggestions for improvement, which can be copy pasted into a coding agent. then, the list of issues or suggestions, where each one (correctness, security, performance, etc.) has a corresponding color and category with the number of issues found for each one, and when clicked, the side panel should filter the results to only show the issues for that type. also add a level of confidence to each one, since the LLM may be uncertain. then, below, the side panel displays the list of issues, with their type, severity level, and explanation, and when clicked, the page should scroll to the position in the source code where the issue is located and highlight it. it also has additional actions such as copying it to the clipboard or dismissing it. also add a severity and confidence filter.
+
+> make it so the page never overflows. the review side panel should be scrollable.
+
+> the labels should be: correctness, security, performance, maintability, style, documentation, and other. the severity and confidence levels should be: low, medium and high.

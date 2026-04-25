@@ -1,7 +1,7 @@
 import { useState } from 'react'
-import { useReview } from '../hooks/useReview'
 import type { RightPanelView } from '../types/review'
 import { Icon } from './Icon'
+import { ReviewResultsPanel } from './ReviewResultsPanel'
 
 const views: Array<{ id: RightPanelView; label: string; icon: 'history' | 'message' | 'review' }> = [
   { id: 'review', label: 'Review', icon: 'review' },
@@ -10,15 +10,7 @@ const views: Array<{ id: RightPanelView; label: string; icon: 'history' | 'messa
 ]
 
 export function InsightPanel() {
-  const { activeSession, cancelReview, generationMessage, isGeneratingReview, submitReview } = useReview()
   const [activeView, setActiveView] = useState<RightPanelView>('review')
-  const review = activeSession.reviewResult
-  const canSubmit = activeSession.code.trim().length > 0 && !isGeneratingReview
-
-  const handleSubmitReview = () => {
-    submitReview()
-    setActiveView('review')
-  }
 
   return (
     <aside className="sidebar insight-panel" aria-label="Review details">
@@ -46,43 +38,7 @@ export function InsightPanel() {
       </div>
 
       <div className="insight-content">
-        {activeView === 'review' && (
-          <div className="review-action-panel">
-            <button className="primary-button" disabled={!canSubmit} onClick={handleSubmitReview} type="button">
-              <span className={isGeneratingReview ? 'spinner-icon' : ''}>
-                <Icon name={isGeneratingReview ? 'loader' : 'send'} />
-              </span>
-              {isGeneratingReview ? 'Generating review' : 'Generate review'}
-            </button>
-
-            {isGeneratingReview && (
-              <button className="secondary-button cancel-button" onClick={cancelReview} type="button">
-                <Icon name="x" />
-                Cancel
-              </button>
-            )}
-
-            {generationMessage && (
-              <p className={`review-message review-message-${generationMessage.tone}`} role="status">
-                {generationMessage.text}
-              </p>
-            )}
-
-            <div className="empty-state">
-              <span className="status-pill">
-                {isGeneratingReview ? 'Running' : review ? `${review.score}/100` : 'Pending'}
-              </span>
-              <h3>{isGeneratingReview ? 'Generating review' : review ? 'Review captured' : 'No review yet'}</h3>
-              <p>
-                {isGeneratingReview
-                  ? 'Analyzing this snippet now. You can cancel the request if you need to edit the code.'
-                  : review
-                    ? review.summary
-                    : 'Generated review results will appear here with severity, line, and suggestion details.'}
-              </p>
-            </div>
-          </div>
-        )}
+        {activeView === 'review' && <ReviewResultsPanel />}
 
         {activeView === 'chat' && (
           <div className="empty-state">

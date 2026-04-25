@@ -1,20 +1,34 @@
-export type ReviewSeverity = 'low' | 'medium' | 'high' | 'critical'
+export type ReviewSeverity = 'low' | 'medium' | 'high'
+
+export type ReviewCategory =
+  | 'correctness'
+  | 'security'
+  | 'performance'
+  | 'maintability'
+  | 'style'
+  | 'documentation'
+  | 'other'
 
 export type ReviewIssue = {
+  category: ReviewCategory
+  confidence: number
   id: string
   title: string
   description: string
   severity: ReviewSeverity
+  suggestion: string
+  dismissed?: boolean
   line?: number
 }
 
 export type ReviewResult = {
   id: string
   createdAt: string
+  overallRating: 'Needs attention' | 'Good' | 'Strong'
+  agentSummary: string
   summary: string
   score: number
   issues: ReviewIssue[]
-  suggestions: string[]
 }
 
 export type ReviewSession = {

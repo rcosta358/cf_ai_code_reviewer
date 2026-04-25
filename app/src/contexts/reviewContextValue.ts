@@ -4,6 +4,9 @@ import type { ReviewGenerationMessage, ReviewGenerationStatus, ReviewSession } f
 export type ReviewContextValue = {
   activeSession: ReviewSession
   cancelReview: () => void
+  dismissIssue: (issueId: string) => void
+  focusSourceLine: (line: number) => void
+  focusedSourceLine: number | null
   generationMessage: ReviewGenerationMessage | null
   generationStatus: ReviewGenerationStatus
   isGeneratingReview: boolean

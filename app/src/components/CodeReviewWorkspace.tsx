@@ -5,7 +5,7 @@ import type { EditorCursorPosition } from './CodeEditor'
 import { ThemeToggle } from './ThemeToggle'
 
 export function CodeReviewWorkspace() {
-  const { activeSession, isGeneratingReview, updateCode } = useReview()
+  const { activeSession, focusedSourceLine, isGeneratingReview, updateCode } = useReview()
   const [cursorPosition, setCursorPosition] = useState<EditorCursorPosition>({ column: 1, line: 1 })
   const handleCursorPositionChange = useCallback((nextCursorPosition: EditorCursorPosition) => {
     setCursorPosition(nextCursorPosition)
@@ -25,6 +25,7 @@ export function CodeReviewWorkspace() {
         <CodeEditor
           code={activeSession.code}
           disabled={isGeneratingReview}
+          focusedLine={focusedSourceLine}
           onChange={updateCode}
           onCursorPositionChange={handleCursorPositionChange}
         />

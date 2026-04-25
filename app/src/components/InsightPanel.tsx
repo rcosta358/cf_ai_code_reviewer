@@ -10,16 +10,22 @@ const views: Array<{ id: RightPanelView; label: string; icon: 'history' | 'messa
 ]
 
 export function InsightPanel() {
-  const { activeSession } = useReview()
+  const { activeSession, submitReview } = useReview()
   const [activeView, setActiveView] = useState<RightPanelView>('review')
   const review = activeSession.reviewResult
+  const canSubmit = activeSession.code.trim().length > 0
+
+  const handleSubmitReview = () => {
+    submitReview()
+    setActiveView('review')
+  }
 
   return (
     <aside className="sidebar insight-panel" aria-label="Review details">
       <div className="panel-header">
         <div>
-          <p className="eyebrow">Details</p>
-          <h2>Workspace</h2>
+          <p className="eyebrow">Review</p>
+          <h2>Actions</h2>
         </div>
       </div>
 
@@ -41,10 +47,17 @@ export function InsightPanel() {
 
       <div className="insight-content">
         {activeView === 'review' && (
-          <div className="empty-state">
-            <span className="status-pill">{review ? `${review.score}/100` : 'Pending'}</span>
-            <h3>{review ? 'Review captured' : 'No review yet'}</h3>
-            <p>{review ? review.summary : 'Generated review results will appear here with severity, line, and suggestion details.'}</p>
+          <div className="review-action-panel">
+            <button className="primary-button" disabled={!canSubmit} onClick={handleSubmitReview} type="button">
+              <Icon name="send" />
+              Generate review
+            </button>
+
+            <div className="empty-state">
+              <span className="status-pill">{review ? `${review.score}/100` : 'Pending'}</span>
+              <h3>{review ? 'Review captured' : 'No review yet'}</h3>
+              <p>{review ? review.summary : 'Generated review results will appear here with severity, line, and suggestion details.'}</p>
+            </div>
           </div>
         )}
 

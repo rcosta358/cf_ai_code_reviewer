@@ -1,5 +1,5 @@
 type IconProps = {
-  name: 'history' | 'message' | 'moon' | 'plus' | 'review' | 'send' | 'sun'
+  name: 'check' | 'copy' | 'history' | 'message' | 'moon' | 'plus' | 'review' | 'send' | 'sun'
 }
 
 export function Icon({ name }: IconProps) {
@@ -13,6 +13,8 @@ export function Icon({ name }: IconProps) {
       )}
       {name === 'moon' && <path d="M20 14.7A8.5 8.5 0 0 1 9.3 4 8.5 8.5 0 1 0 20 14.7Z" />}
       {name === 'plus' && <path d="M12 5v14M5 12h14" />}
+      {name === 'copy' && <path d="M8 8h11v11H8zM5 16H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h11a1 1 0 0 1 1 1v1" />}
+      {name === 'check' && <path d="m20 6-11 11-5-5" />}
       {name === 'send' && <path d="m22 2-7 20-4-9-9-4 20-7ZM11 13l4-4" />}
       {name === 'review' && <path d="M9 11l2 2 4-5M20 12a8 8 0 1 1-3.1-6.3" />}
       {name === 'message' && <path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4v8Z" />}

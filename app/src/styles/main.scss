@@ -379,7 +379,7 @@ h3 {
 .code-editor {
   --editor-gutter-width: 58px;
   --editor-font-size: 0.94rem;
-  --editor-line-height: 1.65;
+  --editor-line-height: 24px;
 
   position: relative;
   min-height: 0;
@@ -420,7 +420,7 @@ h3 {
 
   span {
     display: block;
-    height: 1.65em;
+    height: var(--editor-line-height);
 
     &.is-focused {
       color: var(--primary-strong);

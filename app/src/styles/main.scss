@@ -85,7 +85,8 @@ button:disabled {
 
 .app-shell {
   display: grid;
-  grid-template-columns: 280px minmax(0, 1fr) 340px;
+  position: relative;
+  grid-template-columns: var(--left-panel-width, 280px) minmax(0, 1fr) var(--right-panel-width, 340px);
   grid-template-rows: minmax(0, 1fr);
   gap: 16px;
   height: 100%;
@@ -105,9 +106,72 @@ button:disabled {
 .sidebar {
   display: flex;
   min-height: 0;
+  min-width: 0;
   flex-direction: column;
   overflow: hidden;
+  overflow-x: hidden;
   padding: 18px;
+
+  &.is-collapsed {
+    align-items: center;
+    padding: 12px 8px;
+
+    .panel-header {
+      width: 100%;
+      justify-content: center;
+      margin-bottom: 0;
+    }
+
+    .panel-title {
+      display: none;
+    }
+  }
+}
+
+.panel-header-actions {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 8px;
+}
+
+.panel-resize-handle {
+  position: absolute;
+  top: 16px;
+  bottom: 16px;
+  z-index: 10;
+  width: 12px;
+  cursor: col-resize;
+  touch-action: none;
+
+  &::before {
+    position: absolute;
+    top: 12px;
+    bottom: 12px;
+    left: 5px;
+    width: 2px;
+    border-radius: 999px;
+    background: transparent;
+    content: '';
+    transition: background 140ms ease;
+  }
+
+  &:hover::before {
+    background: var(--primary);
+  }
+}
+
+.panel-resize-handle-left {
+  left: calc(16px + var(--left-panel-width) + 2px);
+}
+
+.panel-resize-handle-right {
+  right: calc(16px + var(--right-panel-width) + 2px);
+}
+
+.is-resizing-panel {
+  cursor: col-resize;
+  user-select: none;
 }
 
 .panel-header,
@@ -513,13 +577,16 @@ h3 {
 .session-list {
   display: flex;
   min-height: 0;
+  min-width: 0;
   flex-direction: column;
   gap: 8px;
-  overflow: auto;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 .session-item {
   display: flex;
+  min-width: 0;
   width: 100%;
   flex-direction: column;
   gap: 6px;
@@ -561,6 +628,7 @@ h3 {
 .view-tabs {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
+  min-width: 0;
   gap: 6px;
   padding: 4px;
   border: 1px solid var(--border);
@@ -598,16 +666,20 @@ h3 {
   display: flex;
   flex: 1;
   min-height: 0;
+  min-width: 0;
   align-items: flex-start;
   justify-content: center;
-  overflow: auto;
+  overflow-x: hidden;
+  overflow-y: auto;
   padding: 24px 0;
 }
 
 .review-results-panel {
   display: grid;
+  min-width: 0;
   width: 100%;
   gap: 16px;
+  overflow-wrap: anywhere;
 }
 
 .review-action-panel {
@@ -829,11 +901,13 @@ h3 {
 
 .issue-list {
   display: grid;
+  min-width: 0;
   gap: 12px;
 }
 
 .issue-card {
   display: grid;
+  min-width: 0;
   gap: 10px;
   border: 1px solid var(--border);
   border-left: 4px solid currentColor;
@@ -848,11 +922,13 @@ h3 {
 
   h3 {
     color: var(--text);
+    overflow-wrap: anywhere;
   }
 
   > p {
     color: var(--muted);
     line-height: 1.5;
+    overflow-wrap: anywhere;
   }
 }
 
@@ -874,8 +950,10 @@ h3 {
 
   div {
     display: inline-flex;
+    min-width: 0;
     align-items: center;
     gap: 7px;
+    overflow-wrap: anywhere;
   }
 }
 
@@ -914,6 +992,7 @@ h3 {
 
 .issue-suggestion {
   display: grid;
+  min-width: 0;
   gap: 5px;
   border-radius: 8px;
   padding: 10px;
@@ -924,6 +1003,10 @@ h3 {
   strong {
     color: var(--text);
     font-size: 0.82rem;
+  }
+
+  p {
+    overflow-wrap: anywhere;
   }
 }
 
@@ -968,6 +1051,10 @@ h3 {
 }
 
 @media (max-width: 1180px) {
+  .panel-resize-handle {
+    display: none;
+  }
+
   .app-shell {
     grid-template-columns: 220px minmax(0, 1fr);
     grid-template-rows: minmax(0, 1fr) minmax(220px, 34svh);

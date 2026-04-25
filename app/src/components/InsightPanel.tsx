@@ -9,19 +9,32 @@ const views: Array<{ id: RightPanelView; label: string; icon: 'history' | 'messa
     { id: 'history', label: 'History', icon: 'history' },
 ]
 
-export function InsightPanel() {
+type InsightPanelProps = {
+    isCollapsed: boolean
+    onToggleCollapse: () => void
+}
+
+export function InsightPanel({ isCollapsed, onToggleCollapse }: InsightPanelProps) {
     const [activeView, setActiveView] = useState<RightPanelView>('review')
 
     return (
-        <aside className="sidebar insight-panel" aria-label="Review details">
+        <aside className={`sidebar insight-panel ${isCollapsed ? 'is-collapsed' : ''}`} aria-label="Review details">
             <div className="panel-header">
-                <div>
+                <div className="panel-title">
                     <p className="eyebrow">Review</p>
                     <h2>Actions</h2>
                 </div>
+                <button
+                    aria-label={isCollapsed ? 'Expand review panel' : 'Collapse review panel'}
+                    className="icon-button"
+                    onClick={onToggleCollapse}
+                    type="button"
+                >
+                    <Icon name={isCollapsed ? 'chevronLeft' : 'chevronRight'} />
+                </button>
             </div>
 
-            <div className="view-tabs" role="tablist" aria-label="Review detail views">
+            {!isCollapsed && <div className="view-tabs" role="tablist" aria-label="Review detail views">
                 {views.map((view) => (
                     <button
                         aria-selected={activeView === view.id}
@@ -35,9 +48,9 @@ export function InsightPanel() {
                         {view.label}
                     </button>
                 ))}
-            </div>
+            </div>}
 
-            <div className="insight-content">
+            {!isCollapsed && <div className="insight-content">
                 {activeView === 'review' && <ReviewResultsPanel />}
 
                 {activeView === 'chat' && (
@@ -55,7 +68,7 @@ export function InsightPanel() {
                         <p>Past results for this session will be listed here once persistence is connected.</p>
                     </div>
                 )}
-            </div>
+            </div>}
         </aside>
     )
 }

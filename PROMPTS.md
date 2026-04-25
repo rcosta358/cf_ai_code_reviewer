@@ -27,3 +27,7 @@ This file contains the prompts used for Codex with GPT-5.5 (Medium). An `AGENTS.
 > move the api call logic from ReviewContext to a separate file in src/services
 
 > change the linter to have 4 spaces instead of 2 for identation
+
+> the copy button in summary should not copy the summary string, it should copy all the issues 
+
+> make it so the side panel on the right is not scrollable horizontally and make it possible for it to be resizable by dragging the border. also do this for the left side panel. also, add a collapse button to both of them.

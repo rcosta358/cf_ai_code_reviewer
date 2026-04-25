@@ -9,22 +9,39 @@ const formatSessionTime = (value: string) =>
         day: 'numeric',
     }).format(new Date(value))
 
-export function SessionSidebar() {
+type SessionSidebarProps = {
+    isCollapsed: boolean
+    onToggleCollapse: () => void
+}
+
+export function SessionSidebar({ isCollapsed, onToggleCollapse }: SessionSidebarProps) {
     const { activeSession, createSession, selectSession, sessions } = useReview()
 
     return (
-        <aside className="sidebar session-sidebar" aria-label="Review sessions">
+        <aside className={`sidebar session-sidebar ${isCollapsed ? 'is-collapsed' : ''}`} aria-label="Review sessions">
             <div className="panel-header">
-                <div>
+                <div className="panel-title">
                     <p className="eyebrow">Sessions</p>
                     <h2>Reviews</h2>
                 </div>
-                <button aria-label="Create review session" className="icon-button" onClick={createSession} type="button">
-                    <Icon name="plus" />
-                </button>
+                <div className="panel-header-actions">
+                    {!isCollapsed && (
+                        <button aria-label="Create review session" className="icon-button" onClick={createSession} type="button">
+                            <Icon name="plus" />
+                        </button>
+                    )}
+                    <button
+                        aria-label={isCollapsed ? 'Expand sessions panel' : 'Collapse sessions panel'}
+                        className="icon-button"
+                        onClick={onToggleCollapse}
+                        type="button"
+                    >
+                        <Icon name={isCollapsed ? 'chevronRight' : 'chevronLeft'} />
+                    </button>
+                </div>
             </div>
 
-            <div className="session-list">
+            {!isCollapsed && <div className="session-list">
                 {sessions.map((session) => (
                     <button
                         className={`session-item ${session.id === activeSession.id ? 'is-active' : ''}`}
@@ -38,7 +55,7 @@ export function SessionSidebar() {
                         </span>
                     </button>
                 ))}
-            </div>
+            </div>}
         </aside>
     )
 }

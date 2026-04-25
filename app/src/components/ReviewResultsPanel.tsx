@@ -63,6 +63,11 @@ const formatIssueForCopy = (issue: ReviewIssue) =>
         `Suggested fix: ${issue.suggestion}`,
     ].join('\n')
 
+const formatIssuesForCopy = (issues: ReviewIssue[]) =>
+    issues.length > 0
+        ? issues.map((issue, index) => `Issue ${index + 1}\n${formatIssueForCopy(issue)}`).join('\n\n')
+        : 'No issues found.'
+
 const getSeverityClassName = (severity: ReviewSeverity) => `severity-${severity}`
 
 function InlineFormattedText({ text }: { text: string }) {
@@ -118,12 +123,12 @@ export function ReviewResultsPanel() {
         submitReview()
     }
 
-    const handleCopySummary = async () => {
+    const handleCopyIssues = async () => {
         if (!review) {
             return
         }
 
-        await navigator.clipboard.writeText(review.summary)
+        await navigator.clipboard.writeText(formatIssuesForCopy(visibleIssues))
         setCopiedId('summary')
         window.setTimeout(() => setCopiedId(null), 1400)
     }
@@ -192,9 +197,9 @@ export function ReviewResultsPanel() {
                             <p>
                                 <InlineFormattedText text={review.summary} />
                             </p>
-                            <button className="secondary-button" onClick={handleCopySummary} type="button">
+                            <button className="secondary-button" onClick={handleCopyIssues} type="button">
                                 <Icon name={copiedId === 'summary' ? 'check' : 'copy'} />
-                                {copiedId === 'summary' ? 'Copied' : 'Copy summary'}
+                                {copiedId === 'summary' ? 'Copied' : 'Copy issues'}
                             </button>
                         </div>
                     </section>

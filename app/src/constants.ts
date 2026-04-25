@@ -73,7 +73,7 @@ export const ISSUE_LEVEL_LABELS: Record<IssueLevelFilter, string> = {
 export const HIGH_CONFIDENCE_THRESHOLD = 0.8
 export const MEDIUM_CONFIDENCE_THRESHOLD = 0.6
 
-export const MAX_CODE_LENGTH = 10_000
+export const MAX_CODE_LENGTH = 50_000
 
 export const REVIEW_MODEL = '@cf/meta/llama-3.3-70b-instruct-fp8-fast'
 export const MAX_MODEL_TOKENS = 2048

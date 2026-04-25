@@ -20,7 +20,7 @@ export function CodeReviewWorkspace() {
             <header className="workspace-header">
                 <div>
                     <p className="eyebrow">Workspace</p>
-                    <h1>AI Code Review</h1>
+                    <h1>AI Code Reviewer</h1>
                 </div>
                 <ThemeToggle />
             </header>

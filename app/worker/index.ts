@@ -1,12 +1,60 @@
-export default {
-  fetch(request) {
-    const url = new URL(request.url);
+import { Hono } from 'hono'
+import { cors } from 'hono/cors'
+import { HTTPException } from 'hono/http-exception'
+import { reviewCode } from './review/service'
+import { parseReviewRequest } from './review/validation'
 
-    if (url.pathname.startsWith("/api/")) {
-      return Response.json({
-        name: "Cloudflare",
-      });
-    }
-		return new Response(null, { status: 404 });
-  },
-} satisfies ExportedHandler<Env>;
+type Bindings = {
+  AI: Ai
+}
+
+const app = new Hono<{ Bindings: Bindings }>()
+
+app.use(
+  '/api/*',
+  cors({
+    allowHeaders: ['Content-Type'],
+    allowMethods: ['GET', 'POST', 'OPTIONS'],
+    origin: '*',
+  }),
+)
+
+app.get('/api/health', (context) =>
+  context.json({
+    ok: true,
+  }),
+)
+
+app.post('/api/review', async (context) => {
+  const payload = await readJson(context.req.raw)
+  const request = parseReviewRequest(payload)
+  const result = await reviewCode(context.env.AI, request)
+
+  return context.json(result)
+})
+
+app.onError((error, context) => {
+  if (error instanceof HTTPException) {
+    return context.json({ error: error.message }, error.status)
+  }
+
+  console.error(error)
+
+  return context.json({ error: 'Unable to generate code review.' }, 500)
+})
+
+async function readJson(request: Request): Promise<unknown> {
+  const contentType = request.headers.get('content-type') ?? ''
+
+  if (!contentType.includes('application/json')) {
+    throw new HTTPException(415, { message: 'Expected application/json request body.' })
+  }
+
+  try {
+    return await request.json()
+  } catch {
+    throw new HTTPException(400, { message: 'Request body must be valid JSON.' })
+  }
+}
+
+export default app

@@ -5,7 +5,6 @@ import type { ReviewContextValue } from './reviewContextValue'
 import type {
   ReviewGenerationMessage,
   ReviewGenerationStatus,
-  ReviewIssue,
   ReviewResult,
   ReviewSession,
 } from '../types/review'
@@ -38,111 +37,23 @@ const createInitialSession = (): ReviewSession => {
   }
 }
 
-const getExampleLine = (code: string, preferredLine: number) => {
-  const lineCount = Math.max(code.split('\n').length, 1)
-  return Math.min(preferredLine, lineCount)
-}
+const REVIEW_GENERATION_TIMEOUT_MS = 30000
 
-const createExampleIssue = (
-  code: string,
-  issue: Omit<ReviewIssue, 'id' | 'line'> & { preferredLine: number },
-): ReviewIssue => ({
-  category: issue.category,
-  confidence: issue.confidence,
-  description: issue.description,
-  id: createId('issue'),
-  line: getExampleLine(code, issue.preferredLine),
-  severity: issue.severity,
-  suggestion: issue.suggestion,
-  title: issue.title,
-})
-
-const createExampleReview = (code: string): ReviewResult => {
-  const issues = [
-    createExampleIssue(code, {
-      category: 'correctness',
-      confidence: 0.88,
-      description:
-        'This branch assumes the input is always present. If the caller passes null, undefined, or an empty shape, the review flow can fail before the user sees a useful error.',
-      preferredLine: 3,
-      severity: 'high',
-      suggestion: 'Add an early guard and return a clear validation result before processing the input.',
-      title: 'Missing input guard',
-    }),
-    createExampleIssue(code, {
-      category: 'security',
-      confidence: 0.74,
-      description:
-        'User-provided content appears to be rendered without an explicit sanitization boundary. This is risky if review output eventually includes HTML or markdown from a model response.',
-      preferredLine: 8,
-      severity: 'high',
-      suggestion: 'Keep rendered model output as text, or sanitize it before injecting it into the DOM.',
-      title: 'Untrusted output rendering path',
-    }),
-    createExampleIssue(code, {
-      category: 'performance',
-      confidence: 0.67,
-      description:
-        'The expensive transformation is likely to run on every render. Large code snippets could make typing feel sluggish as the application grows.',
-      preferredLine: 12,
-      severity: 'medium',
-      suggestion: 'Memoize derived review data and move expensive work out of render paths.',
-      title: 'Repeated expensive computation',
-    }),
-    createExampleIssue(code, {
-      category: 'maintability',
-      confidence: 0.81,
-      description:
-        'The review state and UI formatting concerns are coupled. That makes future backend integration and result rendering harder to change independently.',
-      preferredLine: 18,
-      severity: 'medium',
-      suggestion: 'Keep backend-shaped review data in context and format display-only labels inside presentational components.',
-      title: 'State shape mixes UI concerns',
-    }),
-    createExampleIssue(code, {
-      category: 'style',
-      confidence: 0.62,
-      description:
-        'Some UI labels use different terms for the same workflow. This can make the review surface feel less predictable as more states are added.',
-      preferredLine: 24,
-      severity: 'low',
-      suggestion: 'Use one naming convention for review actions, status labels, and empty states.',
-      title: 'Inconsistent UI wording',
-    }),
-    createExampleIssue(code, {
-      category: 'documentation',
-      confidence: 0.58,
-      description:
-        'The expected backend response shape is implied by UI code but not documented. Future integration work will be easier if the contract is explicit.',
-      preferredLine: 30,
-      severity: 'medium',
-      suggestion: 'Document the review result schema and include examples for categories, severities, confidence, and line references.',
-      title: 'Review result schema is undocumented',
-    }),
-    createExampleIssue(code, {
-      category: 'other',
-      confidence: 0.52,
-      description:
-        'The placeholder review data should be isolated so it can be removed cleanly when the API endpoint is connected.',
-      preferredLine: 36,
-      severity: 'low',
-      suggestion: 'Move fixture review data behind a clearly named mock adapter or delete it during backend integration.',
-      title: 'Temporary review fixture needs an exit path',
-    }),
-  ] satisfies ReviewIssue[]
-
-  return {
-    id: createId('review'),
-    createdAt: new Date().toISOString(),
-    score: 7,
-    summary:
-      'The implementation is directionally solid, but it needs stronger validation, clearer rendering boundaries, and coverage around asynchronous review behavior.',
-    issues,
+const readApiError = (body: unknown) => {
+  if (typeof body === 'object' && body && 'error' in body && typeof body.error === 'string') {
+    return body.error
   }
+
+  return 'Review generation failed.'
 }
 
-const REVIEW_GENERATION_DELAY_MS = 1500
-const REVIEW_GENERATION_TIMEOUT_MS = 10000
+const getErrorMessage = (error: unknown) => {
+  if (error instanceof Error && error.message) {
+    return error.message
+  }
+
+  return 'Review generation failed.'
+}
 
 export function ReviewProvider({ children }: ReviewProviderProps) {
   const [sessions, setSessions] = useState<ReviewSession[]>(() => [createInitialSession()])
@@ -150,25 +61,27 @@ export function ReviewProvider({ children }: ReviewProviderProps) {
   const [generationStatus, setGenerationStatus] = useState<ReviewGenerationStatus>('idle')
   const [generationMessage, setGenerationMessage] = useState<ReviewGenerationMessage | null>(null)
   const [focusedSourceLine, setFocusedSourceLine] = useState<number | null>(null)
-  const completionTimerRef = useRef<number | null>(null)
+  const abortControllerRef = useRef<AbortController | null>(null)
+  const abortReasonRef = useRef<'cancel' | 'timeout' | null>(null)
   const timeoutTimerRef = useRef<number | null>(null)
 
   const activeSession = sessions.find((session) => session.id === activeSessionId) ?? sessions[0]
   const isGeneratingReview = generationStatus === 'loading'
 
   const clearGenerationTimers = useCallback(() => {
-    if (completionTimerRef.current) {
-      window.clearTimeout(completionTimerRef.current)
-      completionTimerRef.current = null
-    }
-
     if (timeoutTimerRef.current) {
       window.clearTimeout(timeoutTimerRef.current)
       timeoutTimerRef.current = null
     }
   }, [])
 
-  useEffect(() => clearGenerationTimers, [clearGenerationTimers])
+  useEffect(
+    () => () => {
+      abortControllerRef.current?.abort()
+      clearGenerationTimers()
+    },
+    [clearGenerationTimers],
+  )
 
   const createSession = useCallback(() => {
     const newSession = createInitialSession()
@@ -209,7 +122,10 @@ export function ReviewProvider({ children }: ReviewProviderProps) {
       return
     }
 
+    abortReasonRef.current = 'cancel'
+    abortControllerRef.current?.abort()
     clearGenerationTimers()
+    abortControllerRef.current = null
     setGenerationStatus('idle')
     setGenerationMessage({
       tone: 'info',
@@ -217,19 +133,45 @@ export function ReviewProvider({ children }: ReviewProviderProps) {
     })
   }, [clearGenerationTimers, isGeneratingReview])
 
-  const submitReview = useCallback(() => {
+  const submitReview = useCallback(async () => {
     if (isGeneratingReview || !activeSession.code.trim()) {
       return
     }
 
     const submittedSessionId = activeSessionId
+    const submittedCode = activeSession.code
 
+    abortControllerRef.current?.abort()
+    abortReasonRef.current = null
     clearGenerationTimers()
+    const abortController = new AbortController()
+    abortControllerRef.current = abortController
     setGenerationStatus('loading')
     setGenerationMessage(null)
 
-    completionTimerRef.current = window.setTimeout(() => {
-      clearGenerationTimers()
+    timeoutTimerRef.current = window.setTimeout(() => {
+      abortReasonRef.current = 'timeout'
+      abortController.abort()
+    }, REVIEW_GENERATION_TIMEOUT_MS)
+
+    try {
+      const response = await fetch('/api/review', {
+        body: JSON.stringify({ code: submittedCode }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        method: 'POST',
+        signal: abortController.signal,
+      })
+
+      const body = await response.json().catch(() => null)
+
+      if (!response.ok) {
+        throw new Error(readApiError(body))
+      }
+
+      const review = body as ReviewResult
+
       setSessions((currentSessions) =>
         currentSessions.map((session, index) =>
           session.id === submittedSessionId
@@ -237,7 +179,7 @@ export function ReviewProvider({ children }: ReviewProviderProps) {
                 ...session,
                 title: createSessionTitle(session.code, index + 1),
                 updatedAt: new Date().toISOString(),
-                result: createExampleReview(session.code),
+                result: review,
               }
             : session,
         ),
@@ -247,16 +189,28 @@ export function ReviewProvider({ children }: ReviewProviderProps) {
         tone: 'info',
         text: 'Review generated successfully.',
       })
-    }, REVIEW_GENERATION_DELAY_MS)
+    } catch (error) {
+      const wasAborted = abortController.signal.aborted
+      const abortReason = abortReasonRef.current
 
-    timeoutTimerRef.current = window.setTimeout(() => {
-      clearGenerationTimers()
       setGenerationStatus('idle')
       setGenerationMessage({
-        tone: 'warning',
-        text: 'Review generation timed out after 10 seconds and was cancelled.',
+        tone: wasAborted && abortReason === 'cancel' ? 'info' : 'warning',
+        text:
+          wasAborted && abortReason === 'timeout'
+            ? 'Review generation timed out after 30 seconds and was cancelled.'
+            : wasAborted
+              ? 'Review generation was cancelled.'
+              : getErrorMessage(error),
       })
-    }, REVIEW_GENERATION_TIMEOUT_MS)
+    } finally {
+      if (abortControllerRef.current === abortController) {
+        abortControllerRef.current = null
+        abortReasonRef.current = null
+      }
+
+      clearGenerationTimers()
+    }
   }, [activeSession.code, activeSessionId, clearGenerationTimers, isGeneratingReview])
 
   const dismissIssue = useCallback(

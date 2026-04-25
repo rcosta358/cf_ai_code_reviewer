@@ -22,3 +22,6 @@ This file contains the prompts used for Codex with GPT-5.5 (Medium). An `AGENTS.
 
 > the line highlighting is slightly offset vertically, it needs to match the position exactly with the line. fix it.
 
+> implement the cloudflare workers logic that receives the code from the frontend, sends it to the LLM for analysis and returns the structured feedback to the frontend. make sure the model follows the instructions and returns the exact json we are expecting. keep the code clean and well organized. follow the best practices for cloudflare workers development. reuse the types already implemented and only add more if needed.
+
+

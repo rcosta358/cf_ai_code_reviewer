@@ -22,15 +22,16 @@ Lightweight AI-powered code review application that uses Llama 3.3 to analyze co
 ## Architecture
 
 This project is built using the Cloudflare ecosystem:
-- Frontend (Cloudflare Pages) - simple UI for users to paste code and see reviews
-- Backend (Cloudflare Workers) - handles requests and interacts with the LLM
-- LLM (Workers AI, Llama 3.3) - performs code analysis and generates feedback
-- State:
-    - Cloudflare KV - stores review history and cached results
-    - Local Storage - saves user sessions and preferences
+- **Frontend** (Cloudflare Pages) - simple UI for users to paste code and see reviews
+- **Backend** (Cloudflare Workers) - handles requests and interacts with the LLM
+- **LLM** (Workers AI, Llama 3.3) - performs code analysis and generates feedback
+- **Data Storage** (Cloudflare KV) - stores review history and cached results
+- **Session Management** (Local Storage) - saves user sessions and preferences
 
 ## References
 
 - https://agents.cloudflare.com
+- https://workers.cloudflare.com
+- https://pages.cloudflare.com
 - https://developers.cloudflare.com/workers-ai/configuration/bindings
 - https://developers.cloudflare.com/kv

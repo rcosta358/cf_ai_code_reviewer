@@ -4,7 +4,6 @@ type IconProps = {
     | 'chevronLeft'
     | 'chevronRight'
     | 'copy'
-    | 'history'
     | 'loader'
     | 'message'
     | 'moon'
@@ -36,7 +35,6 @@ export function Icon({ name }: IconProps) {
             {name === 'send' && <path d="m22 2-7 20-4-9-9-4 20-7ZM11 13l4-4" />}
             {name === 'review' && <path d="M9 11l2 2 4-5M20 12a8 8 0 1 1-3.1-6.3" />}
             {name === 'message' && <path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4v8Z" />}
-            {name === 'history' && <path d="M3 12a9 9 0 1 0 3-6.7L3 8M3 3v5h5M12 7v6l4 2" />}
             {name === 'trash' && <path d="M3 6h18M8 6V4h8v2M6 6l1 15h10l1-15M10 11v6M14 11v6" />}
         </svg>
     )

@@ -61,3 +61,5 @@ This file contains the prompts used for Codex with GPT-5.5 (Medium). An `AGENTS.
 > add more samples to the examples folder: java spring boot controller, rust cli parser, go calculator, kotlin jetpack compose component. simple examples. dont make it all about security, make these about code quality.
 
 > the typescript code needs refactoring, namely regarding typing. it should never use unknown or any. for example, in the service.ts, it repeatedly receives parameters of type unknown and then casts them to the type we want. that should never happen. look for other examples throughout the project. also, try to avoid using casting and satisfies keyword. fix this. this probably is caused by the json parsing and validation. maybe we should use a library for that.
+
+> i had in mind implementing the review history but i want to make it simpler. lets remove it and only keep review and chat in the right side bar. also update the readme and everything else that mentions it.

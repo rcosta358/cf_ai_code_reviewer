@@ -19,16 +19,15 @@
 - Each issue is annotated with a explanation, suggestion, severity, and confidence level, and with the position in the source code
 - Overall rating and summary of the review
 - Follow-up chat to ask for clarifications or further suggestions
-- Stores past reviews, review history and caches results for identical inputs
+- Stores review sessions
 
 ## Workflow
 
 1. User pastes code into the editor and clicks the review button
-2. Backend checks for cached result
-3. If not cached, the backend sends the code to the LLM for analysis, with a predefined prompt that instructs how the LLM should analyze the code and how it should structure the response (JSON) 
-4. LLM returns structured feedback
-5. Backend stores the result in cache and updates the user's review history
-6. Frontend displays the feedback to the user in a clear and actionable way
+2. The backend sends the code to the LLM for analysis, with a system prompt that instructs how the LLM should analyze the code and how it should structure the response in JSON format
+3. LLM returns the response
+4. Backend stores the result in the user session
+5. Frontend displays the feedback to the user
 
 ## Architecture
 
@@ -36,8 +35,8 @@ This project is was built with React+Vite in TypeScript and deployed as a Cloudf
 - **Frontend** (Worker Static Assets) - user interface to paste code and see reviews
 - **Backend** (Cloudflare Workers) - handles requests and interacts with the LLM
 - **LLM** (Workers AI, Llama 3.3) - performs code analysis and generates feedback
-- **Data Storage** (Cloudflare KV) - stores review history and cached results
-- **Session Storage** (Local Storage) - saves user sessions and preferences
+- **Data Storage** (Cloudflare KV) - stores review sessions
+- **Session Storage** (Local Storage) - saves user preferences and session id
 
 ## References
 

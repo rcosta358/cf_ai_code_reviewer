@@ -3,10 +3,9 @@ import type { RightPanelView } from '../types/review'
 import { Icon } from './Icon'
 import { ReviewResultsPanel } from './ReviewResultsPanel'
 
-const views: Array<{ id: RightPanelView; label: string; icon: 'history' | 'message' | 'review' }> = [
+const views: Array<{ id: RightPanelView; label: string; icon: 'message' | 'review' }> = [
     { id: 'review', label: 'Review', icon: 'review' },
     { id: 'chat', label: 'Chat', icon: 'message' },
-    { id: 'history', label: 'History', icon: 'history' },
 ]
 
 type InsightPanelProps = {
@@ -61,13 +60,6 @@ export function InsightPanel({ isCollapsed, onToggleCollapse }: InsightPanelProp
                     </div>
                 )}
 
-                {activeView === 'history' && (
-                    <div className="empty-state">
-                        <span className="status-pill">Soon</span>
-                        <h3>Review history</h3>
-                        <p>Past results for this session will be listed here.</p>
-                    </div>
-                )}
             </div>}
         </aside>
     )

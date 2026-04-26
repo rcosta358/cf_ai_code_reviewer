@@ -38,7 +38,7 @@ export type ReviewSession = {
   result: ReviewResult | null
 }
 
-export type RightPanelView = 'review' | 'chat' | 'history'
+export type RightPanelView = 'review' | 'chat'
 
 export type ReviewGenerationStatus = 'idle' | 'loading'
 

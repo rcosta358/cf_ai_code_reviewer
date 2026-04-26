@@ -57,3 +57,5 @@ This file contains the prompts used for Codex with GPT-5.5 (Medium). An `AGENTS.
 > implement the backend storage of sessions in cloudflare kv. in local storage with store a random uuid for the user session if not already present and use it for indexing in the cloudflare kv to get the user session. this way, when the user reloads the page their reviews are persisted.
 
 > add a button for each review to delete it from storage.
+
+> add more samples to the examples folder: java spring boot controller, rust cli parser, go calculator, kotlin jetpack compose component. simple examples. dont make it all about security, make these about code quality.

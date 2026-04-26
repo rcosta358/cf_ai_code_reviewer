@@ -1,4 +1,4 @@
-import type { CodeExample } from '../examples'
+import type { CodeExample } from '../types/review'
 import { Icon } from './Icon'
 
 type CodeEditorToolbarProps = {

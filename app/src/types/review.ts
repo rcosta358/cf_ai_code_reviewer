@@ -46,3 +46,9 @@ export type ReviewGenerationMessage = {
   tone: 'info' | 'warning'
   text: string
 }
+
+export type CodeExample = {
+  code: string
+  id: string
+  label: string
+}

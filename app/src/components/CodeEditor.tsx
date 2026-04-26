@@ -11,7 +11,7 @@ import {
 } from '../services/editorService'
 import { CodeEditorInput } from './CodeEditorInput'
 import { CodeEditorToolbar } from './CodeEditorToolbar'
-import type { CodeExample } from '../examples'
+import type { CodeExample } from '../types/review'
 
 export type EditorCursorPosition = {
   column: number

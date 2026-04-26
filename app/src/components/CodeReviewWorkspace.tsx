@@ -2,7 +2,7 @@ import { useCallback, useMemo, useState } from 'react'
 import { useReview } from '../hooks/useReview'
 import { CodeEditor } from './CodeEditor'
 import type { EditorCursorPosition } from './CodeEditor'
-import { CODE_EXAMPLES } from '../examples'
+import { CODE_EXAMPLES } from '../services/exampleService'
 import { ThemeToggle } from './ThemeToggle'
 
 export function CodeReviewWorkspace() {

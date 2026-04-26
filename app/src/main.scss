@@ -805,6 +805,10 @@ h3 {
   overflow-y: hidden;
 }
 
+.chat-disabled-state {
+  align-self: flex-start;
+}
+
 .review-results-panel {
   display: grid;
   min-width: 0;

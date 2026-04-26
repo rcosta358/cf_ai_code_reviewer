@@ -23,7 +23,7 @@ export function Chat() {
 
     if (!hasReview) {
         return (
-            <div className="empty-state">
+            <div className="empty-state chat-disabled-state">
                 <span className="status-pill">Disabled</span>
                 <h3>Follow-up chat</h3>
                 <p>Ask clarifying questions or request revised suggestions after a review is generated.</p>

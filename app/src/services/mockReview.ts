@@ -3,6 +3,7 @@ import type { ReviewResult } from '../types/review'
 export const mockReview: ReviewResult = {
     id: 'review-mock',
     createdAt: '2026-04-26T00:00:00.000Z',
+    chatMessage: '',
     score: 6.8,
     summary:
     'Mock review enabled. This response is served locally so you can test the interface without spending Workers AI credits.',

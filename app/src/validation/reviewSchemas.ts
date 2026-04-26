@@ -25,15 +25,6 @@ export const reviewCategorySchema = z.enum([
     'other',
 ])
 
-export const reviewRequestSchema = z.strictObject({
-    code: z
-        .string({ error: 'code must be a string.' })
-        .refine((value) => value.trim().length > 0, { message: 'Code cannot be empty.' })
-        .refine((value) => value.length <= MAX_CODE_LENGTH, {
-            message: `Code cannot exceed ${MAX_CODE_LENGTH} characters.`,
-        }),
-})
-
 const modelReviewIssueSchema = z.object({
     category: reviewCategorySchema.catch('other'),
     confidence: clampedNumberSchema(0, 1, 0.5),
@@ -45,6 +36,7 @@ const modelReviewIssueSchema = z.object({
 }).strip()
 
 export const modelReviewResultSchema = z.object({
+    chatMessage: z.string().trim().catch(''),
     issues: z.array(modelReviewIssueSchema).catch([]),
     score: clampedNumberSchema(0, 10, 0),
     summary: nonEmptyTextSchema('Review completed.'),
@@ -63,6 +55,7 @@ export const reviewIssueSchema = z.strictObject({
 })
 
 export const reviewResultSchema = z.strictObject({
+    chatMessage: z.string().catch(''),
     createdAt: z.string(),
     id: z.string(),
     issues: z.array(reviewIssueSchema),
@@ -70,7 +63,30 @@ export const reviewResultSchema = z.strictObject({
     summary: z.string(),
 })
 
+export const reviewChatMessageSchema = z.strictObject({
+    createdAt: z.string(),
+    id: z.string(),
+    role: z.enum(['assistant', 'user']),
+    text: z.string(),
+})
+
+export const reviewRequestSchema = z.strictObject({
+    chatMessages: z.array(reviewChatMessageSchema).max(20).optional().catch([]),
+    code: z
+        .string({ error: 'code must be a string.' })
+        .refine((value) => value.trim().length > 0, { message: 'Code cannot be empty.' })
+        .refine((value) => value.length <= MAX_CODE_LENGTH, {
+            message: `Code cannot exceed ${MAX_CODE_LENGTH} characters.`,
+        }),
+    followUpPrompt: z.string().trim().min(1).max(4000).optional(),
+    previousReview: reviewResultSchema.optional(),
+}).refine(
+    (value) => !value.followUpPrompt || Boolean(value.previousReview),
+    { message: 'A previous review is required for follow-up prompts.', path: ['previousReview'] },
+)
+
 export const reviewSessionSchema = z.strictObject({
+    chatMessages: z.array(reviewChatMessageSchema).catch([]),
     code: z.string(),
     createdAt: z.string(),
     id: z.string(),

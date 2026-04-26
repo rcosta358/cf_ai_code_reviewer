@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import type { RightPanelView } from '../types/review'
+import { Chat } from './Chat'
 import { Icon } from './Icon'
 import { ReviewResultsPanel } from './ReviewResultsPanel'
 
@@ -49,16 +50,10 @@ export function InsightPanel({ isCollapsed, onToggleCollapse }: InsightPanelProp
                 ))}
             </div>}
 
-            {!isCollapsed && <div className="insight-content">
+            {!isCollapsed && <div className={`insight-content insight-content-${activeView}`}>
                 {activeView === 'review' && <ReviewResultsPanel />}
 
-                {activeView === 'chat' && (
-                    <div className="empty-state">
-                        <span className="status-pill">Soon</span>
-                        <h3>Follow-up chat</h3>
-                        <p>Ask clarifying questions or request revised suggestions after a review is generated.</p>
-                    </div>
-                )}
+                {activeView === 'chat' && <Chat />}
 
             </div>}
         </aside>

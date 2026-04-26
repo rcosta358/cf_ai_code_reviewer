@@ -47,6 +47,7 @@ function normalizeReviewResult(result: ModelReviewResult): ReviewResult {
     return {
         id: createId('review'),
         createdAt: new Date().toISOString(),
+        chatMessage: result.chatMessage,
         score: result.score,
         summary: result.summary,
         issues: result.issues.map(normalizeIssue).sort(compareIssuesByLine),

@@ -1,15 +1,27 @@
-import type { ReviewResult } from '../types/review'
+import type { ReviewChatMessage, ReviewResult } from '../types/review'
 import { API_REVIEW_ENDPOINT, MOCK_REVIEW_DELAY_MS, USE_MOCK_REVIEW } from '../constants'
 import { mockReview } from './mockReview'
 import type { JsonValue } from '../types/json'
 import { apiErrorSchema, reviewResultSchema } from '../validation/reviewSchemas'
 
-export async function generateReview(code: string, signal?: AbortSignal): Promise<ReviewResult> {
+type GenerateReviewOptions = {
+    chatMessages?: ReviewChatMessage[]
+    followUpPrompt?: string
+    previousReview?: ReviewResult
+    signal?: AbortSignal
+}
+
+export async function generateReview(code: string, options: GenerateReviewOptions = {}): Promise<ReviewResult> {
+    const { chatMessages, followUpPrompt, previousReview, signal } = options
+
     if (USE_MOCK_REVIEW) {
         await waitForMockReview(signal)
 
         return {
             ...mockReview,
+            chatMessage: followUpPrompt
+                ? 'I updated the review using your clarification. The revised findings are shown in the review tab.'
+                : '',
             createdAt: new Date().toISOString(),
             id: `review-mock-${crypto.randomUUID()}`,
             issues: mockReview.issues.map((issue) => ({
@@ -20,7 +32,7 @@ export async function generateReview(code: string, signal?: AbortSignal): Promis
     }
 
     const response = await fetch(API_REVIEW_ENDPOINT, {
-        body: JSON.stringify({ code }),
+        body: JSON.stringify({ chatMessages, code, followUpPrompt, previousReview }),
         headers: {
             'Content-Type': 'application/json',
         },

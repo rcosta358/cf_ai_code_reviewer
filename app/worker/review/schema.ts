@@ -3,8 +3,12 @@ import { REVIEW_CATEGORIES, REVIEW_SEVERITIES } from '../../src/constants'
 export const reviewResponseSchema = {
     type: 'object',
     additionalProperties: false,
-    required: ['score', 'summary', 'issues'],
+    required: ['chatMessage', 'score', 'summary', 'issues'],
     properties: {
+        chatMessage: {
+            type: 'string',
+            description: 'Empty for initial reviews. For follow-up prompts, a concise assistant response that answers the user and explains any review changes.',
+        },
         score: {
             type: 'number',
             minimum: 0,

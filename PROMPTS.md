@@ -63,3 +63,9 @@ This file contains the prompts used for Codex with GPT-5.5 (Medium). An `AGENTS.
 > the typescript code needs refactoring, namely regarding typing. it should never use unknown or any. for example, in the service.ts, it repeatedly receives parameters of type unknown and then casts them to the type we want. that should never happen. look for other examples throughout the project. also, try to avoid using casting and satisfies keyword. fix this. this probably is caused by the json parsing and validation. maybe we should use a library for that.
 
 > i had in mind implementing the review history but i want to make it simpler. lets remove it and only keep review and chat in the right side bar. also update the readme and everything else that mentions it.
+
+> implement the follow up chat. this chat should only be available if the user has made a review, otherwise disabled. since the llm call is stateless, we need to pass the previous review as context. the chat has two purposes: 1. ask clarification about something in the review, where the response appears in the chat. 2. clarify aspects of the code that might change the review, so the output should be both the answer as before and also a new review. for example, the llm may think that a method parameter is user controlled, but if the user says in the chat that the parameter is sanitized, the new review should make this issue disappear. so, we need to add a new field to the llm json schema, with a message that for normal reviews comes back empty but when follow up prompts are made it should appear in the chat, like chatgpt.
+
+> make it so when enter is pressed on the prompt it sends it and also make the prompt section sticky
+
+> in the chat outer section, make the it unscrollable and only scrollable vertically the chat itself with the messages

@@ -18,8 +18,8 @@
 - Covers multiple aspects of code quality (correctness, security, maintability, performance, etc.)
 - Each issue is annotated with a explanation, suggestion, severity, and confidence level, and with the position in the source code
 - Overall rating and summary of the review
-- Follow-up chat to ask for clarifications or further suggestions
 - Stores review sessions
+- Follow-up chat to ask for clarifications or further suggestions
 
 ## Workflow
 

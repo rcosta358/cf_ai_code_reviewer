@@ -1,5 +1,5 @@
 import { REVIEW_GENERATION_TIMEOUT_SECONDS } from '../constants'
-import type { ReviewGenerationMessage, ReviewResult, ReviewSession } from '../types/review'
+import type { ReviewChatMessage, ReviewGenerationMessage, ReviewResult, ReviewSession } from '../types/review'
 
 type AbortReason = 'cancel' | 'timeout' | null
 
@@ -9,6 +9,7 @@ export function createReviewSession(): ReviewSession {
     return {
         id: createId('session'),
         title: 'Untitled review',
+        chatMessages: [],
         code: '',
         createdAt: now,
         updatedAt: now,
@@ -43,11 +44,48 @@ export function applyReviewResult(
             ? {
                 ...session,
                 title: createSessionTitle(session.code, index + 1),
+                chatMessages: review.chatMessage
+                    ? [
+                        ...session.chatMessages,
+                        createReviewChatMessage('assistant', review.chatMessage),
+                    ]
+                    : [],
                 updatedAt: new Date().toISOString(),
                 result: review,
             }
             : session,
     )
+}
+
+export function applyFollowUpResult(
+    sessions: ReviewSession[],
+    sessionId: string,
+    prompt: string,
+    review: ReviewResult,
+) {
+    return sessions.map((session) =>
+        session.id === sessionId
+            ? {
+                ...session,
+                chatMessages: [
+                    ...session.chatMessages,
+                    createReviewChatMessage('user', prompt),
+                    createReviewChatMessage('assistant', review.chatMessage || 'I updated the review with that context.'),
+                ],
+                updatedAt: new Date().toISOString(),
+                result: review,
+            }
+            : session,
+    )
+}
+
+export function createReviewChatMessage(role: ReviewChatMessage['role'], text: string): ReviewChatMessage {
+    return {
+        id: createId(`chat-${role}`),
+        createdAt: new Date().toISOString(),
+        role,
+        text,
+    }
 }
 
 export function dismissReviewIssue(

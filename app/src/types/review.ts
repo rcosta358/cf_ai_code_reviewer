@@ -24,14 +24,23 @@ export type ReviewIssue = {
 export type ReviewResult = {
   id: string
   createdAt: string
+  chatMessage: string
   score: number
   summary: string
   issues: ReviewIssue[]
 }
 
+export type ReviewChatMessage = {
+  id: string
+  createdAt: string
+  role: 'assistant' | 'user'
+  text: string
+}
+
 export type ReviewSession = {
   id: string
   title: string
+  chatMessages: ReviewChatMessage[]
   code: string
   createdAt: string
   updatedAt: string

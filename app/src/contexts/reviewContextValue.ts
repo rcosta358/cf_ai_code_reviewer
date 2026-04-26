@@ -14,6 +14,7 @@ export type ReviewContextValue = {
   createSession: () => void
   deleteSession: (sessionId: string) => void
   selectSession: (sessionId: string) => void
+  submitFollowUp: (prompt: string) => void
   updateCode: (code: string) => void
   submitReview: () => void
 }

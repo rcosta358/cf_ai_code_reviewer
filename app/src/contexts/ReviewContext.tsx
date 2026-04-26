@@ -11,6 +11,7 @@ import {
 } from '../services/sessionStorageService'
 import {
     applyReviewResult,
+    applyFollowUpResult,
     createReviewGenerationMessage,
     createReviewSession,
     dismissReviewIssue,
@@ -181,7 +182,7 @@ export function ReviewProvider({ children }: ReviewProviderProps) {
         }, REVIEW_GENERATION_TIMEOUT_MS)
 
         try {
-            const review = await generateReview(submittedCode, abortController.signal)
+            const review = await generateReview(submittedCode, { signal: abortController.signal })
 
             setSessions((currentSessions) => applyReviewResult(currentSessions, submittedSessionId, review))
             setGenerationStatus('idle')
@@ -204,6 +205,68 @@ export function ReviewProvider({ children }: ReviewProviderProps) {
             clearGenerationTimers()
         }
     }, [activeSession.code, activeSessionId, clearGenerationTimers, isGeneratingReview])
+
+    const submitFollowUp = useCallback(async (prompt: string) => {
+        const trimmedPrompt = prompt.trim()
+
+        if (isGeneratingReview || !activeSession.result || !activeSession.code.trim() || !trimmedPrompt) {
+            return
+        }
+
+        const submittedSessionId = activeSessionId
+        const submittedCode = activeSession.code
+        const previousReview = activeSession.result
+        const chatMessages = activeSession.chatMessages
+
+        abortControllerRef.current?.abort()
+        abortReasonRef.current = null
+        clearGenerationTimers()
+        const abortController = new AbortController()
+        abortControllerRef.current = abortController
+        setGenerationStatus('loading')
+        setGenerationMessage(null)
+
+        timeoutTimerRef.current = window.setTimeout(() => {
+            abortReasonRef.current = 'timeout'
+            abortController.abort()
+        }, REVIEW_GENERATION_TIMEOUT_MS)
+
+        try {
+            const review = await generateReview(submittedCode, {
+                chatMessages,
+                followUpPrompt: trimmedPrompt,
+                previousReview,
+                signal: abortController.signal,
+            })
+
+            setSessions((currentSessions) => applyFollowUpResult(currentSessions, submittedSessionId, trimmedPrompt, review))
+            setGenerationStatus('idle')
+            setGenerationMessage({
+                tone: 'info',
+                text: 'Follow-up review updated successfully.',
+            })
+        } catch (error) {
+            const wasAborted = abortController.signal.aborted
+            const abortReason = abortReasonRef.current
+
+            setGenerationStatus('idle')
+            setGenerationMessage(createReviewGenerationMessage(error instanceof Error ? error : null, wasAborted, abortReason))
+        } finally {
+            if (abortControllerRef.current === abortController) {
+                abortControllerRef.current = null
+                abortReasonRef.current = null
+            }
+
+            clearGenerationTimers()
+        }
+    }, [
+        activeSession.chatMessages,
+        activeSession.code,
+        activeSession.result,
+        activeSessionId,
+        clearGenerationTimers,
+        isGeneratingReview,
+    ])
 
     const dismissIssue = useCallback(
         (issueId: string) => {
@@ -251,6 +314,7 @@ export function ReviewProvider({ children }: ReviewProviderProps) {
             sessions,
             createSession,
             selectSession,
+            submitFollowUp,
             updateCode,
             submitReview,
         }),
@@ -268,6 +332,7 @@ export function ReviewProvider({ children }: ReviewProviderProps) {
             selectSession,
             sessions,
             submitReview,
+            submitFollowUp,
             updateCode,
         ],
     )

@@ -12,5 +12,8 @@ export function parseReviewRequest(payload: JsonValue): ParsedReviewRequest {
         throw new HTTPException(status, { message })
     }
 
-    return result.data
+    return {
+        ...result.data,
+        chatMessages: result.data.chatMessages ?? [],
+    }
 }

@@ -69,3 +69,5 @@ This file contains the prompts used for Codex with GPT-5.5 (Medium). An `AGENTS.
 > make it so when enter is pressed on the prompt it sends it and also make the prompt section sticky
 
 > in the chat outer section, make the it unscrollable and only scrollable vertically the chat itself with the messages
+
+> as soon as the user presses enter in the chat their message should appear, also, besides the loading state of the send button, add a "thinking..." while we wait for the agent to reply. also the prompt textarea should be preserved when switching between review and chat views

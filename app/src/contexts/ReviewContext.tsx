@@ -12,6 +12,7 @@ import {
 import {
     applyReviewResult,
     applyFollowUpResult,
+    appendFollowUpPrompt,
     createReviewGenerationMessage,
     createReviewSession,
     dismissReviewIssue,
@@ -33,6 +34,7 @@ export function ReviewProvider({ children }: ReviewProviderProps) {
     const [hasLoadedPersistedState, setHasLoadedPersistedState] = useState(false)
     const [generationStatus, setGenerationStatus] = useState<ReviewGenerationStatus>('idle')
     const [generationMessage, setGenerationMessage] = useState<ReviewGenerationMessage | null>(null)
+    const [pendingFollowUpSessionId, setPendingFollowUpSessionId] = useState<string | null>(null)
     const [focusedSourceLine, setFocusedSourceLine] = useState<number | null>(null)
     const abortControllerRef = useRef<AbortController | null>(null)
     const abortReasonRef = useRef<'cancel' | 'timeout' | null>(null)
@@ -41,6 +43,7 @@ export function ReviewProvider({ children }: ReviewProviderProps) {
 
     const activeSession = sessions.find((session) => session.id === activeSessionId) ?? sessions[0]
     const isGeneratingReview = generationStatus === 'loading'
+    const isAwaitingFollowUpReply = pendingFollowUpSessionId === activeSession.id && isGeneratingReview
 
     const clearGenerationTimers = useCallback(() => {
         if (timeoutTimerRef.current) {
@@ -153,6 +156,7 @@ export function ReviewProvider({ children }: ReviewProviderProps) {
         abortControllerRef.current?.abort()
         clearGenerationTimers()
         abortControllerRef.current = null
+        setPendingFollowUpSessionId(null)
         setGenerationStatus('idle')
         setGenerationMessage({
             tone: 'info',
@@ -173,6 +177,7 @@ export function ReviewProvider({ children }: ReviewProviderProps) {
         clearGenerationTimers()
         const abortController = new AbortController()
         abortControllerRef.current = abortController
+        setPendingFollowUpSessionId(null)
         setGenerationStatus('loading')
         setGenerationMessage(null)
 
@@ -218,11 +223,13 @@ export function ReviewProvider({ children }: ReviewProviderProps) {
         const previousReview = activeSession.result
         const chatMessages = activeSession.chatMessages
 
+        setSessions((currentSessions) => appendFollowUpPrompt(currentSessions, submittedSessionId, trimmedPrompt))
         abortControllerRef.current?.abort()
         abortReasonRef.current = null
         clearGenerationTimers()
         const abortController = new AbortController()
         abortControllerRef.current = abortController
+        setPendingFollowUpSessionId(submittedSessionId)
         setGenerationStatus('loading')
         setGenerationMessage(null)
 
@@ -239,7 +246,7 @@ export function ReviewProvider({ children }: ReviewProviderProps) {
                 signal: abortController.signal,
             })
 
-            setSessions((currentSessions) => applyFollowUpResult(currentSessions, submittedSessionId, trimmedPrompt, review))
+            setSessions((currentSessions) => applyFollowUpResult(currentSessions, submittedSessionId, review))
             setGenerationStatus('idle')
             setGenerationMessage({
                 tone: 'info',
@@ -258,6 +265,7 @@ export function ReviewProvider({ children }: ReviewProviderProps) {
             }
 
             clearGenerationTimers()
+            setPendingFollowUpSessionId(null)
         }
     }, [
         activeSession.chatMessages,
@@ -310,6 +318,7 @@ export function ReviewProvider({ children }: ReviewProviderProps) {
             focusSourceLine,
             generationMessage,
             generationStatus,
+            isAwaitingFollowUpReply,
             isGeneratingReview,
             sessions,
             createSession,
@@ -328,6 +337,7 @@ export function ReviewProvider({ children }: ReviewProviderProps) {
             focusSourceLine,
             generationMessage,
             generationStatus,
+            isAwaitingFollowUpReply,
             isGeneratingReview,
             selectSession,
             sessions,

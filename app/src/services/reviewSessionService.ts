@@ -60,7 +60,6 @@ export function applyReviewResult(
 export function applyFollowUpResult(
     sessions: ReviewSession[],
     sessionId: string,
-    prompt: string,
     review: ReviewResult,
 ) {
     return sessions.map((session) =>
@@ -69,11 +68,29 @@ export function applyFollowUpResult(
                 ...session,
                 chatMessages: [
                     ...session.chatMessages,
-                    createReviewChatMessage('user', prompt),
                     createReviewChatMessage('assistant', review.chatMessage || 'I updated the review with that context.'),
                 ],
                 updatedAt: new Date().toISOString(),
                 result: review,
+            }
+            : session,
+    )
+}
+
+export function appendFollowUpPrompt(
+    sessions: ReviewSession[],
+    sessionId: string,
+    prompt: string,
+) {
+    return sessions.map((session) =>
+        session.id === sessionId
+            ? {
+                ...session,
+                chatMessages: [
+                    ...session.chatMessages,
+                    createReviewChatMessage('user', prompt),
+                ],
+                updatedAt: new Date().toISOString(),
             }
             : session,
     )

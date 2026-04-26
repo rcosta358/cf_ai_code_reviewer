@@ -1,14 +1,25 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { FormEvent } from 'react'
 import { useReview } from '../hooks/useReview'
 import { Icon } from './Icon'
 import { InlineFormattedText } from './InlineFormattedText'
 
 export function Chat() {
-    const { activeSession, isGeneratingReview, submitFollowUp } = useReview()
+    const { activeSession, isAwaitingFollowUpReply, isGeneratingReview, submitFollowUp } = useReview()
     const [prompt, setPrompt] = useState('')
+    const threadRef = useRef<HTMLDivElement>(null)
     const hasReview = Boolean(activeSession.result)
     const canSubmit = hasReview && prompt.trim().length > 0 && !isGeneratingReview
+
+    useEffect(() => {
+        const thread = threadRef.current
+
+        if (!thread) {
+            return
+        }
+
+        thread.scrollTo({ top: thread.scrollHeight, behavior: 'smooth' })
+    }, [activeSession.chatMessages.length, isAwaitingFollowUpReply])
 
     const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault()
@@ -33,7 +44,7 @@ export function Chat() {
 
     return (
         <div className="follow-up-chat">
-            <div className="chat-thread" aria-label="Follow-up conversation">
+            <div className="chat-thread" aria-label="Follow-up conversation" ref={threadRef}>
                 {activeSession.chatMessages.length === 0 && (
                     <div className="empty-state compact-empty">
                         <span className="status-pill">Ready</span>
@@ -47,6 +58,13 @@ export function Chat() {
                         <p><InlineFormattedText text={message.text} /></p>
                     </article>
                 ))}
+
+                {isAwaitingFollowUpReply && (
+                    <article className="chat-message chat-message-assistant chat-message-thinking" role="status">
+                        <strong>Reviewer</strong>
+                        <p>Thinking...</p>
+                    </article>
+                )}
             </div>
 
             <form className="chat-composer" onSubmit={handleSubmit}>

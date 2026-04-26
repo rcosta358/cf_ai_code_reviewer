@@ -9,6 +9,7 @@ export type ReviewContextValue = {
   focusedSourceLine: number | null
   generationMessage: ReviewGenerationMessage | null
   generationStatus: ReviewGenerationStatus
+  isAwaitingFollowUpReply: boolean
   isGeneratingReview: boolean
   sessions: ReviewSession[]
   createSession: () => void

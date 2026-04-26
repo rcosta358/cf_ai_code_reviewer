@@ -805,6 +805,14 @@ h3 {
   overflow-y: hidden;
 }
 
+.insight-view-panel {
+  display: contents;
+}
+
+.insight-view-panel[hidden] {
+  display: none;
+}
+
 .chat-disabled-state {
   align-self: flex-start;
 }
@@ -897,6 +905,10 @@ h3 {
 
 .chat-message-assistant {
   justify-self: start;
+}
+
+.chat-message-thinking {
+  color: var(--muted);
 }
 
 .chat-composer {

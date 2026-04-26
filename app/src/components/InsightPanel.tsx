@@ -51,10 +51,12 @@ export function InsightPanel({ isCollapsed, onToggleCollapse }: InsightPanelProp
             </div>}
 
             {!isCollapsed && <div className={`insight-content insight-content-${activeView}`}>
-                {activeView === 'review' && <ReviewResultsPanel />}
-
-                {activeView === 'chat' && <Chat />}
-
+                <div className={`insight-view-panel ${activeView === 'review' ? 'is-active' : ''}`} hidden={activeView !== 'review'}>
+                    <ReviewResultsPanel />
+                </div>
+                <div className={`insight-view-panel ${activeView === 'chat' ? 'is-active' : ''}`} hidden={activeView !== 'chat'}>
+                    <Chat />
+                </div>
             </div>}
         </aside>
     )

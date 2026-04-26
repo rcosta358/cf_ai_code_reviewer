@@ -43,7 +43,7 @@ export const LANGUAGE_LABELS: Record<string, string> = {
     plaintext: 'Plain Text',
 }
 
-export const REVIEW_CATEGORIES = [
+export const REVIEW_CATEGORIES: ReviewCategory[] = [
     'correctness',
     'security',
     'performance',
@@ -51,7 +51,7 @@ export const REVIEW_CATEGORIES = [
     'style',
     'documentation',
     'other',
-] as const satisfies ReviewCategory[]
+] as const
 
 export const REVIEW_CATEGORY_LABELS: Record<ReviewCategory, string> = {
     correctness: 'Correctness',
@@ -65,7 +65,7 @@ export const REVIEW_CATEGORY_LABELS: Record<ReviewCategory, string> = {
 
 export const REVIEW_CATEGORY_ORDER = REVIEW_CATEGORIES
 
-export const REVIEW_SEVERITIES = ['low', 'medium', 'high'] as const satisfies ReviewSeverity[]
+export const REVIEW_SEVERITIES: ReviewSeverity[] = ['low', 'medium', 'high'] as const
 
 export type IssueLevelFilter = 'all' | ReviewSeverity
 

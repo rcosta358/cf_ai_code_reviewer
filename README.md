@@ -37,21 +37,20 @@ The prompts used can be found in [`PROMPTS.md`](./PROMPTS.md).
 
 ## Architecture
 
-This project was built with React + Vite in TypeScript and deployed as a Cloudflare Worker:
-
-- **Frontend** (Worker Static Assets): user interface to paste code, view review results, manage sessions, and chat about a review
-- **Backend** (Cloudflare Workers): handles API requests, validates payloads, calls the LLM, and stores/retrieves sessions
+- **Frontend** (React, Vite, Worker Static Assets): user interface to paste code, view review results, manage sessions, and chat about a review
+- **Backend** (Cloudflare Worker): handles API requests, validates payloads, calls the LLM, and stores/retrieves sessions
 - **LLM** (Workers AI, Llama 3.3): performs code analysis and generates structured feedback
 - **Data Storage** (Cloudflare KV): stores review sessions
 - **Session Storage** (Local Storage): saves user preferences and the user session id
 
 ```mermaid
 flowchart LR
-  User --> React
-  React --> Worker
-  Worker --> WorkersAI
-  Worker --> KV
-
+  Start(( )) --> Frontend
+  Frontend --> CW["Cloudflare Worker"]
+  CW --> WAI["Workers AI"]
+  WAI --> Llama["Llama 3.3"]
+  CW --> KV["Cloudflare KV"]
+  Frontend --> LS["Local Storage"]
 ```
 
 ## Getting Started

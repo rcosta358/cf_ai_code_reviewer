@@ -1,28 +1,21 @@
 import { useMemo, useState } from 'react'
-import {
-    COPY_FEEDBACK_DURATION_MS,
-    ISSUE_LEVEL_LABELS,
-    REVIEW_CATEGORY_LABELS,
-    REVIEW_CATEGORY_ORDER,
-} from '../constants'
+import { COPY_FEEDBACK_DURATION_MS } from '../constants'
 import type { IssueLevelFilter } from '../constants'
 import { useReview } from '../hooks/useReview'
 import {
     formatIssueForCopy,
     formatIssuesForCopy,
     getCategoryCounts,
-    getConfidenceLabel,
     getFilteredIssues,
-    getSeverityClassName,
     getVisibleIssues,
 } from '../services/reviewIssueService'
 import type { ReviewCategory, ReviewIssue } from '../types/review'
-import { renderInlineHtml } from '../utils'
-import { Icon } from './Icon'
-
-function InlineFormattedText({ text }: { text: string }) {
-    return <>{renderInlineHtml(text)}</>
-}
+import { ReviewActionPanel } from './ReviewActionPanel'
+import { ReviewCategoryFilter } from './ReviewCategoryFilter'
+import { ReviewFilters } from './ReviewFilters'
+import { ReviewIssueList } from './ReviewIssueList'
+import { ReviewStatusState } from './ReviewStatusState'
+import { ReviewSummary } from './ReviewSummary'
 
 export function ReviewResultsPanel() {
     const {
@@ -73,21 +66,12 @@ export function ReviewResultsPanel() {
 
     return (
         <div className="review-results-panel">
-            <div className="review-action-panel">
-                <button className="primary-button" disabled={!canSubmit} onClick={handleSubmitReview} type="button">
-                    <span className={isGeneratingReview ? 'spinner-icon' : ''}>
-                        {isGeneratingReview ? <Icon name="loader" /> : <span aria-hidden="true" className="sparkle-emoji">✨</span>}
-                    </span>
-                    {isGeneratingReview ? 'Reviewing...' : 'Start Review'}
-                </button>
-
-                {isGeneratingReview && (
-                    <button className="secondary-button cancel-button" onClick={cancelReview} type="button">
-                        <Icon name="x" />
-            Cancel
-                    </button>
-                )}
-            </div>
+            <ReviewActionPanel
+                canSubmit={canSubmit}
+                isGeneratingReview={isGeneratingReview}
+                onCancel={cancelReview}
+                onSubmit={handleSubmitReview}
+            />
 
             {generationMessage && (
                 <p className={`review-message review-message-${generationMessage.tone}`} role="status">
@@ -96,160 +80,52 @@ export function ReviewResultsPanel() {
             )}
 
             {!review && !isGeneratingReview && (
-                <div className="empty-state">
-                    <span className="status-pill">Pending</span>
-                    <h3>No review yet</h3>
-                    <p>Ask for a code review to look for potential issues and suggestions for a code snippet.</p>
-                </div>
+                <ReviewStatusState
+                    description="Ask for a code review to look for potential issues and suggestions for a code snippet."
+                    title="No review yet"
+                    tone="Pending"
+                />
             )}
 
             {isGeneratingReview && (
-                <div className="empty-state">
-                    <span className="status-pill">Running</span>
-                    <h3>Generating review</h3>
-                    <p>Analyzing this snippet now. You can cancel the request if you need to edit the code.</p>
-                </div>
+                <ReviewStatusState
+                    description="Analyzing this snippet now. You can cancel the request if you need to edit the code."
+                    title="Generating review"
+                    tone="Running"
+                />
             )}
 
             {review && !isGeneratingReview && (
                 <>
-                    <section className="review-summary" aria-label="Review summary">
-                        <div className="summary-grid">
-                            <div>
-                                <span className="summary-value">{visibleIssues.length}</span>
-                                <span className="summary-label">Issues</span>
-                            </div>
-                            <div>
-                                <span className="summary-value">{review.score}/10</span>
-                                <span className="summary-label">Score</span>
-                            </div>
-                        </div>
+                    <ReviewSummary
+                        copied={copiedId === 'summary'}
+                        issueCount={visibleIssues.length}
+                        onCopyIssues={handleCopyIssues}
+                        score={review.score}
+                        summary={review.summary}
+                    />
 
-                        <div className="agent-summary">
-                            <p>
-                                <InlineFormattedText text={review.summary} />
-                            </p>
-                            <button className="secondary-button" onClick={handleCopyIssues} type="button">
-                                <Icon name={copiedId === 'summary' ? 'check' : 'copy'} />
-                                {copiedId === 'summary' ? 'Copied' : 'Copy issues'}
-                            </button>
-                        </div>
-                    </section>
+                    <ReviewFilters
+                        confidenceFilter={confidenceFilter}
+                        onConfidenceFilterChange={setConfidenceFilter}
+                        onSeverityFilterChange={setSeverityFilter}
+                        severityFilter={severityFilter}
+                    />
 
-                    <section className="review-filters" aria-label="Review filters">
-                        <label>
-              Severity
-                            <select value={severityFilter} onChange={(event) => setSeverityFilter(event.target.value as IssueLevelFilter)}>
-                                {Object.entries(ISSUE_LEVEL_LABELS).map(([value, label]) => (
-                                    <option key={value} value={value}>
-                                        {label}
-                                    </option>
-                                ))}
-                            </select>
-                        </label>
+                    <ReviewCategoryFilter
+                        activeCategory={activeCategory}
+                        categoryCounts={categoryCounts}
+                        onCategoryChange={setActiveCategory}
+                        totalIssueCount={visibleIssues.length}
+                    />
 
-                        <label>
-              Confidence
-                            <select
-                                value={confidenceFilter}
-                                onChange={(event) => setConfidenceFilter(event.target.value as IssueLevelFilter)}
-                            >
-                                {Object.entries(ISSUE_LEVEL_LABELS).map(([value, label]) => (
-                                    <option key={value} value={value}>
-                                        {label}
-                                    </option>
-                                ))}
-                            </select>
-                        </label>
-                    </section>
-
-                    <section className="category-filter" aria-label="Issue categories">
-                        <button
-                            className={`category-chip category-all ${activeCategory === 'all' ? 'is-active' : ''}`}
-                            onClick={() => setActiveCategory('all')}
-                            type="button"
-                        >
-              All <span>{visibleIssues.length}</span>
-                        </button>
-                        {REVIEW_CATEGORY_ORDER.map((category) => (
-                            <button
-                                className={`category-chip category-${category} ${activeCategory === category ? 'is-active' : ''}`}
-                                key={category}
-                                onClick={() => setActiveCategory(category)}
-                                type="button"
-                            >
-                                {REVIEW_CATEGORY_LABELS[category]} <span>{categoryCounts[category]}</span>
-                            </button>
-                        ))}
-                    </section>
-
-                    <section className="issue-list" aria-label="Review issues">
-                        {filteredIssues.length === 0 && (
-                            <div className="empty-state compact-empty">
-                                <h3>No issues</h3>
-                                <p>Try changing the filters to see more results.</p>
-                            </div>
-                        )}
-
-                        {filteredIssues.map((issue) => (
-                            <article
-                                className={`issue-card category-border-${issue.category}`}
-                                key={issue.id}
-                                onClick={() => issue.line && focusSourceLine(issue.line)}
-                            >
-                                <div className="issue-card-header">
-                                    <div>
-                                        <span className={`category-dot category-bg-${issue.category}`} />
-                                        <span>{REVIEW_CATEGORY_LABELS[issue.category]}</span>
-                                    </div>
-                                    <span className={`severity-pill ${getSeverityClassName(issue.severity)}`}>{issue.severity}</span>
-                                </div>
-
-                                <h3>
-                                    <InlineFormattedText text={issue.title} />
-                                </h3>
-                                <p>
-                                    <InlineFormattedText text={issue.description} />
-                                </p>
-
-                                <div className="issue-meta">
-                                    <span>{issue.line ? `Line ${issue.line}` : 'No line'}</span>
-                                    <span>{getConfidenceLabel(issue.confidence)} confidence</span>
-                                </div>
-
-                                <div className="issue-suggestion">
-                                    <strong>Suggested fix</strong>
-                                    <p>
-                                        <InlineFormattedText text={issue.suggestion} />
-                                    </p>
-                                </div>
-
-                                <div className="issue-actions">
-                                    <button
-                                        className="secondary-button"
-                                        onClick={(event) => {
-                                            event.stopPropagation()
-                                            handleCopyIssue(issue)
-                                        }}
-                                        type="button"
-                                    >
-                                        <Icon name={copiedId === issue.id ? 'check' : 'copy'} />
-                                        {copiedId === issue.id ? 'Copied' : 'Copy'}
-                                    </button>
-                                    <button
-                                        className="secondary-button"
-                                        onClick={(event) => {
-                                            event.stopPropagation()
-                                            dismissIssue(issue.id)
-                                        }}
-                                        type="button"
-                                    >
-                    Dismiss
-                                    </button>
-                                </div>
-                            </article>
-                        ))}
-                    </section>
+                    <ReviewIssueList
+                        copiedId={copiedId}
+                        issues={filteredIssues}
+                        onCopyIssue={handleCopyIssue}
+                        onDismissIssue={dismissIssue}
+                        onFocusSourceLine={focusSourceLine}
+                    />
                 </>
             )}
         </div>

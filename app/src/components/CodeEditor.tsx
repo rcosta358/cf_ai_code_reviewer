@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState, type KeyboardEvent } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState, type KeyboardEvent, type UIEvent } from 'react'
 import { COPY_FEEDBACK_DURATION_MS, DEFAULT_EDITOR_METRICS } from '../constants'
 import { useCodeHighlight } from '../hooks/useCodeHighlight'
 import { useCursorPosition } from '../hooks/useCursorPosition'
@@ -9,7 +9,8 @@ import {
     getTextareaEditorMetrics,
     insertTabAtSelection,
 } from '../services/editorService'
-import { Icon } from './Icon'
+import { CodeEditorInput } from './CodeEditorInput'
+import { CodeEditorToolbar } from './CodeEditorToolbar'
 import type { CodeExample } from '../examples'
 
 export type EditorCursorPosition = {
@@ -115,94 +116,50 @@ export function CodeEditor({
         })
     }
 
+    const handleScroll = (event: UIEvent<HTMLTextAreaElement>) => {
+        if (highlightRef.current) {
+            highlightRef.current.scrollTo({
+                left: event.currentTarget.scrollLeft,
+                top: event.currentTarget.scrollTop,
+            })
+        }
+
+        if (lineNumberRef.current) {
+            lineNumberRef.current.scrollTop = event.currentTarget.scrollTop
+        }
+    }
+
     return (
         <>
-            <div className="editor-toolbar">
-                <div className="editor-metadata" aria-label="Code editor metadata">
-                    <span className="language-badge">{language}</span>
-                </div>
+            <CodeEditorToolbar
+                copied={copied}
+                disabled={disabled}
+                exampleOptions={exampleOptions}
+                hasCode={hasCode}
+                language={language}
+                onCopy={handleCopy}
+                onSelectExample={onSelectExample}
+                selectedExampleId={selectedExampleId}
+            />
 
-                <div className="editor-toolbar-actions">
-                    <label className="example-select">
-                        <select
-                            aria-label="Load example code"
-                            disabled={disabled}
-                            onChange={(event) => {
-                                const selectedExample = exampleOptions.find((example) => example.id === event.target.value)
-
-                                if (selectedExample) {
-                                    onSelectExample(selectedExample.code)
-                                }
-                            }}
-                            value={selectedExampleId}
-                        >
-                            <option value="">Select Example</option>
-                            {exampleOptions.map((example) => (
-                                <option key={example.id} value={example.id}>
-                                    {example.label}
-                                </option>
-                            ))}
-                        </select>
-                    </label>
-
-                    <button className="secondary-button" disabled={!hasCode} onClick={handleCopy} type="button">
-                        <Icon name={copied ? 'check' : 'copy'} />
-                        {copied ? 'Copied' : 'Copy'}
-                    </button>
-                </div>
-            </div>
-
-            <div className="code-editor">
-                <textarea
-                    aria-hidden="true"
-                    className="line-number-gutter"
-                    readOnly
-                    ref={lineNumberRef}
-                    style={{
-                        paddingBottom: editorMetrics.paddingTop + editorMetrics.horizontalScrollbarHeight,
-                    }}
-                    tabIndex={-1}
-                    value={lineNumbers}
-                />
-
-                {hasCode && (
-                    <pre className="code-highlight" aria-hidden="true" ref={highlightRef}>
-                        <code dangerouslySetInnerHTML={{ __html: highlightedCode }} />
-                    </pre>
-                )}
-
-                <textarea
-                    aria-label="Paste code for review"
-                    className={`code-input ${hasCode ? 'has-code' : ''}`}
-                    disabled={disabled}
-                    ref={textareaRef}
-                    onChange={(event) => {
-                        onChange(event.target.value)
-                        captureCursor(event.target)
-                    }}
-                    onClick={(event) => captureCursor(event.currentTarget)}
-                    onFocus={(event) => captureCursor(event.currentTarget)}
-                    onKeyDown={handleKeyDown}
-                    onKeyUp={(event) => captureCursor(event.currentTarget)}
-                    onSelect={(event) => captureCursor(event.currentTarget)}
-                    onScroll={(event) => {
-                        if (highlightRef.current) {
-                            highlightRef.current.scrollTo({
-                                left: event.currentTarget.scrollLeft,
-                                top: event.currentTarget.scrollTop,
-                            })
-                        }
-
-                        if (lineNumberRef.current) {
-                            lineNumberRef.current.scrollTop = event.currentTarget.scrollTop
-                        }
-                    }}
-                    placeholder="Paste your code here to get an AI review"
-                    spellCheck={false}
-                    value={code}
-                    wrap="off"
-                />
-            </div>
+            <CodeEditorInput
+                code={code}
+                disabled={disabled}
+                editorMetrics={editorMetrics}
+                hasCode={hasCode}
+                highlightedCode={highlightedCode}
+                highlightRef={highlightRef}
+                lineNumberRef={lineNumberRef}
+                lineNumbers={lineNumbers}
+                onChange={(event) => {
+                    onChange(event.target.value)
+                    captureCursor(event.target)
+                }}
+                onCursorCapture={captureCursor}
+                onKeyDown={handleKeyDown}
+                onScroll={handleScroll}
+                textareaRef={textareaRef}
+            />
         </>
     )
 }

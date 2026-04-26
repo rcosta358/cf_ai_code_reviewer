@@ -24,12 +24,13 @@
 	"vars": {
 		"ALLOWED_ORIGINS": "http://localhost:5173,http://127.0.0.1:5173,https://ai-code-reviewer.rcosta-ms358.workers.dev"
 	},
-	// "kv_namespaces": [
-	// 	{
-	// 		"binding": "KV",
-	// 		"id": "<YOUR_BINDING_ID>"
-	// 	}
-	// ]
+	"kv_namespaces": [
+		{
+			"binding": "SESSIONS_KV",
+			"id": "abe8390dd322400e92bac8d5cb2bbe2e",
+			"preview_id": "9c25b1c241094baa860c270303a6a79c"
+		},
+	]
 	/**
 	 * Smart Placement
 	 * https://developers.cloudflare.com/workers/configuration/smart-placement/#smart-placement

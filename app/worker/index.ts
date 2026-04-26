@@ -3,10 +3,12 @@ import { cors } from 'hono/cors'
 import { HTTPException } from 'hono/http-exception'
 import { reviewCode } from './review/service'
 import { parseReviewRequest } from './review/validation'
+import { clearReviewState, loadReviewState, parseUserSessionId, saveReviewState } from './session/storage'
 
 type Bindings = {
   AI: Ai
   ALLOWED_ORIGINS?: string
+  SESSIONS_KV: KVNamespace
 }
 
 const app = new Hono<{ Bindings: Bindings }>()
@@ -21,7 +23,7 @@ app.use(
     '/api/*',
     cors({
         allowHeaders: ['Content-Type'],
-        allowMethods: ['GET', 'POST', 'OPTIONS'],
+        allowMethods: ['DELETE', 'GET', 'POST', 'PUT', 'OPTIONS'],
         origin: (origin, context) => (getAllowedOrigins(context.env.ALLOWED_ORIGINS).has(origin) ? origin : null),
     }),
 )
@@ -40,6 +42,30 @@ app.post('/api/review', async (context) => {
     return context.json(result)
 })
 
+app.get('/api/sessions/:userSessionId', async (context) => {
+    const userSessionId = parseUserSessionId(context.req.param('userSessionId'))
+    const state = await loadReviewState(context.env.SESSIONS_KV, userSessionId)
+
+    return context.json(state)
+})
+
+app.put('/api/sessions/:userSessionId', async (context) => {
+    const userSessionId = parseUserSessionId(context.req.param('userSessionId'))
+    const payload = await readJson(context.req.raw)
+
+    await saveReviewState(context.env.SESSIONS_KV, userSessionId, payload)
+
+    return context.json({ ok: true })
+})
+
+app.delete('/api/sessions/:userSessionId', async (context) => {
+    const userSessionId = parseUserSessionId(context.req.param('userSessionId'))
+
+    await clearReviewState(context.env.SESSIONS_KV, userSessionId)
+
+    return context.json({ ok: true })
+})
+
 app.onError((error, context) => {
     if (error instanceof HTTPException) {
         return context.json({ error: error.message }, error.status)
@@ -47,12 +73,14 @@ app.onError((error, context) => {
 
     console.error(error)
 
-    return context.json({ error: getReviewGenerationErrorMessage(error) }, 500)
+    return context.json({ error: getApiErrorMessage(context.req.path, error) }, 500)
 })
 
-function getReviewGenerationErrorMessage(error: unknown): string {
+function getApiErrorMessage(path: string, error: unknown): string {
     const reason = getSafeErrorReason(error)
-    return `Could not generate review. ${reason || 'Please try again in a moment.'}`
+    const action = path.startsWith('/api/review') ? 'generate review' : 'sync saved reviews'
+
+    return `Could not ${action}. ${reason || 'Please try again in a moment.'}`
 }
 
 function getSafeErrorReason(error: unknown): string | null {

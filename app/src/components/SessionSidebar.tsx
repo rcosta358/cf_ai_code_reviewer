@@ -15,7 +15,7 @@ type SessionSidebarProps = {
 }
 
 export function SessionSidebar({ isCollapsed, onToggleCollapse }: SessionSidebarProps) {
-    const { activeSession, createSession, selectSession, sessions } = useReview()
+    const { activeSession, clearReviews, createSession, isGeneratingReview, selectSession, sessions } = useReview()
 
     return (
         <aside className={`sidebar session-sidebar ${isCollapsed ? 'is-collapsed' : ''}`} aria-label="Review sessions">
@@ -26,9 +26,20 @@ export function SessionSidebar({ isCollapsed, onToggleCollapse }: SessionSidebar
                 </div>
                 <div className="panel-header-actions">
                     {!isCollapsed && (
-                        <button aria-label="Create review session" className="icon-button" onClick={createSession} type="button">
-                            <Icon name="plus" />
-                        </button>
+                        <>
+                            <button
+                                aria-label="Clear all reviews"
+                                className="icon-button"
+                                disabled={isGeneratingReview}
+                                onClick={clearReviews}
+                                type="button"
+                            >
+                                <Icon name="trash" />
+                            </button>
+                            <button aria-label="Create review session" className="icon-button" onClick={createSession} type="button">
+                                <Icon name="plus" />
+                            </button>
+                        </>
                     )}
                     <button
                         aria-label={isCollapsed ? 'Expand sessions panel' : 'Collapse sessions panel'}

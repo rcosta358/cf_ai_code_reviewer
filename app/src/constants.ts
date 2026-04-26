@@ -1,8 +1,11 @@
 import type { ReviewCategory, ReviewSeverity } from './types/review'
 
 export const API_REVIEW_ENDPOINT = '/api/review'
+export const API_SESSIONS_ENDPOINT = '/api/sessions'
 export const USE_MOCK_REVIEW = import.meta.env.VITE_USE_MOCK_REVIEW === 'true'
 export const MOCK_REVIEW_DELAY_MS = 650
+export const SESSION_STORAGE_KEY = 'ai-code-reviewer-user-session-id'
+export const SESSION_SAVE_DEBOUNCE_MS = 450
 
 export const THEME_STORAGE_KEY = 'ai-code-reviewer-theme'
 export const DEFAULT_THEME = 'dark'

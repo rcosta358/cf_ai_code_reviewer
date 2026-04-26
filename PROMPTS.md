@@ -53,3 +53,5 @@ This file contains the prompts used for Codex with GPT-5.5 (Medium). An `AGENTS.
 > this code needs refactoring. most components have too much logic. we need to move the logic to the services folder. components should only be responsible for rendering the ui and handling user interactions. components that need this refactoring: CodeEditor, ReviewResultsPanel, ReviewContext. extract functions to appropriate files and make sure to reuse code when possible.
 
 > now we need to refactor the ui components too, which are way too large and complex. they need to be split into smaller components that are easier to manage and understand. components that need this refactoring: CodeEditor, ReviewResultsPanel.
+
+> implement the backend storage of sessions in cloudflare kv. in local storage with store a random uuid for the user session if not already present and use it for indexing in the cloudflare kv to get the user session. this way, when the user reloads the page their reviews are persisted. also add a button to clear all reviews.

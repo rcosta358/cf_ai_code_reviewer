@@ -6,6 +6,7 @@ declare namespace Cloudflare {
 		mainModule: typeof import("./worker/index");
 	}
 	interface Env {
+		SESSIONS_KV: KVNamespace;
 	}
 }
 interface Env extends Cloudflare.Env {}

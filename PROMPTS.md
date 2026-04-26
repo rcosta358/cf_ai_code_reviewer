@@ -50,3 +50,4 @@ This file contains the prompts used for Codex with GPT-5.5 (Medium). An `AGENTS.
 
 > change the cors policy in the worker from * to only localhost:5173 and https://ai-code-reviewer.rcosta-ms358.workers.dev
 
+> this code needs refactoring. most components have too much logic. we need to move the logic to the services folder. components should only be responsible for rendering the ui and handling user interactions. components that need this refactoring: CodeEditor, ReviewResultsPanel, ReviewContext. extract functions to appropriate files and make sure to reuse code when possible.

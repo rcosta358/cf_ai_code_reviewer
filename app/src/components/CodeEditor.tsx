@@ -2,6 +2,13 @@ import { useEffect, useLayoutEffect, useRef, useState, type KeyboardEvent } from
 import { COPY_FEEDBACK_DURATION_MS, DEFAULT_EDITOR_METRICS } from '../constants'
 import { useCodeHighlight } from '../hooks/useCodeHighlight'
 import { useCursorPosition } from '../hooks/useCursorPosition'
+import {
+    getFocusedLineScrollTop,
+    getLineNumbers,
+    getLineSelectionRange,
+    getTextareaEditorMetrics,
+    insertTabAtSelection,
+} from '../services/editorService'
 import { Icon } from './Icon'
 import type { CodeExample } from '../examples'
 
@@ -19,37 +26,6 @@ type CodeEditorProps = {
   onChange: (code: string) => void
   onSelectExample: (code: string) => void
   selectedExampleId: string
-}
-
-function getLineSelectionRange(code: string, line: number) {
-    const targetLine = Math.max(Math.floor(line), 1)
-    let currentLine = 1
-    let start = 0
-
-    while (currentLine < targetLine) {
-        const nextLineIndex = code.indexOf('\n', start)
-
-        if (nextLineIndex === -1) {
-            return { end: code.length, start: code.length }
-        }
-
-        start = nextLineIndex + 1
-        currentLine += 1
-    }
-
-    const nextLineIndex = code.indexOf('\n', start)
-    const lineEnd = nextLineIndex === -1 ? code.length : nextLineIndex
-    const end = lineEnd > start ? lineEnd : Math.min(start + 1, code.length)
-
-    return { end, start }
-}
-
-function insertTabAtSelection(textarea: HTMLTextAreaElement, code: string) {
-    const { selectionEnd, selectionStart } = textarea
-    const nextCode = `${code.slice(0, selectionStart)}\t${code.slice(selectionEnd)}`
-    const nextCursorPosition = selectionStart + 1
-
-    return { nextCode, nextCursorPosition }
 }
 
 export function CodeEditor({
@@ -70,7 +46,7 @@ export function CodeEditor({
     const { highlightedCode, language } = useCodeHighlight(code)
     const { captureCursor, cursorPosition } = useCursorPosition(code)
     const hasCode = code.length > 0
-    const lineNumbers = Array.from({ length: code.split('\n').length }, (_, index) => index + 1).join('\n')
+    const lineNumbers = getLineNumbers(code)
 
     useEffect(() => {
         onCursorPositionChange(cursorPosition)
@@ -84,20 +60,7 @@ export function CodeEditor({
         }
 
         const syncEditorMetrics = () => {
-            const style = window.getComputedStyle(textarea)
-            const borderBlockWidth = Number.parseFloat(style.borderTopWidth) + Number.parseFloat(style.borderBottomWidth)
-            const horizontalScrollbarHeight = textarea.offsetHeight - textarea.clientHeight - borderBlockWidth
-            const lineHeight = Number.parseFloat(style.lineHeight)
-            const paddingTop = Number.parseFloat(style.paddingTop)
-
-            setEditorMetrics({
-                horizontalScrollbarHeight: Math.max(
-                    Number.isFinite(horizontalScrollbarHeight) ? horizontalScrollbarHeight : 0,
-                    0,
-                ),
-                lineHeight: Number.isFinite(lineHeight) ? lineHeight : DEFAULT_EDITOR_METRICS.lineHeight,
-                paddingTop: Number.isFinite(paddingTop) ? paddingTop : DEFAULT_EDITOR_METRICS.paddingTop,
-            })
+            setEditorMetrics(getTextareaEditorMetrics(textarea))
 
             if (lineNumberRef.current) {
                 lineNumberRef.current.scrollTop = textarea.scrollTop
@@ -117,7 +80,7 @@ export function CodeEditor({
             return
         }
 
-        const nextScrollTop = Math.max((focusedLine - 2) * editorMetrics.lineHeight, 0)
+        const nextScrollTop = getFocusedLineScrollTop(focusedLine, editorMetrics.lineHeight)
         textareaRef.current.scrollTo({ top: nextScrollTop, behavior: 'smooth' })
         textareaRef.current.focus({ preventScroll: true })
 
@@ -173,7 +136,7 @@ export function CodeEditor({
                             }}
                             value={selectedExampleId}
                         >
-                            <option value="">Select example</option>
+                            <option value="">Select Example</option>
                             {exampleOptions.map((example) => (
                                 <option key={example.id} value={example.id}>
                                     {example.label}

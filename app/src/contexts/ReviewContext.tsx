@@ -1,53 +1,27 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
-import { REVIEW_GENERATION_TIMEOUT_MS, REVIEW_GENERATION_TIMEOUT_SECONDS } from '../constants'
+import { REVIEW_GENERATION_TIMEOUT_MS } from '../constants'
 import { ReviewContext } from './reviewContextValue'
 import type { ReviewContextValue } from './reviewContextValue'
 import { generateReview } from '../services/reviewService'
+import {
+    applyReviewResult,
+    createReviewGenerationMessage,
+    createReviewSession,
+    dismissReviewIssue,
+    updateSessionCode,
+} from '../services/reviewSessionService'
 import type {
     ReviewGenerationMessage,
     ReviewGenerationStatus,
-    ReviewSession,
 } from '../types/review'
 
 type ReviewProviderProps = {
   children: ReactNode
 }
 
-const createId = (prefix: string) => `${prefix}-${crypto.randomUUID()}`
-
-const createSessionTitle = (code: string, index: number) => {
-    const firstLine = code
-        .split('\n')
-        .map((line) => line.trim())
-        .find(Boolean)
-
-    return firstLine ? firstLine.slice(0, 42) : `Review ${index}`
-}
-
-const createInitialSession = (): ReviewSession => {
-    const now = new Date().toISOString()
-
-    return {
-        id: createId('session'),
-        title: 'Untitled review',
-        code: '',
-        createdAt: now,
-        updatedAt: now,
-        result: null,
-    }
-}
-
-const getErrorMessage = (error: unknown) => {
-    if (error instanceof Error && error.message) {
-        return error.message
-    }
-
-    return 'Review generation failed.'
-}
-
 export function ReviewProvider({ children }: ReviewProviderProps) {
-    const [sessions, setSessions] = useState<ReviewSession[]>(() => [createInitialSession()])
+    const [sessions, setSessions] = useState(() => [createReviewSession()])
     const [activeSessionId, setActiveSessionId] = useState(() => sessions[0].id)
     const [generationStatus, setGenerationStatus] = useState<ReviewGenerationStatus>('idle')
     const [generationMessage, setGenerationMessage] = useState<ReviewGenerationMessage | null>(null)
@@ -75,7 +49,7 @@ export function ReviewProvider({ children }: ReviewProviderProps) {
     )
 
     const createSession = useCallback(() => {
-        const newSession = createInitialSession()
+        const newSession = createReviewSession()
 
         setSessions((currentSessions) => [...currentSessions, newSession])
         setActiveSessionId(newSession.id)
@@ -92,18 +66,7 @@ export function ReviewProvider({ children }: ReviewProviderProps) {
                 return
             }
 
-            setSessions((currentSessions) =>
-                currentSessions.map((session, index) =>
-                    session.id === activeSessionId
-                        ? {
-                            ...session,
-                            code,
-                            title: session.result ? session.title : createSessionTitle(code, index + 1),
-                            updatedAt: new Date().toISOString(),
-                        }
-                        : session,
-                ),
-            )
+            setSessions((currentSessions) => updateSessionCode(currentSessions, activeSessionId, code))
         },
         [activeSessionId, isGeneratingReview],
     )
@@ -148,18 +111,7 @@ export function ReviewProvider({ children }: ReviewProviderProps) {
         try {
             const review = await generateReview(submittedCode, abortController.signal)
 
-            setSessions((currentSessions) =>
-                currentSessions.map((session, index) =>
-                    session.id === submittedSessionId
-                        ? {
-                            ...session,
-                            title: createSessionTitle(session.code, index + 1),
-                            updatedAt: new Date().toISOString(),
-                            result: review,
-                        }
-                        : session,
-                ),
-            )
+            setSessions((currentSessions) => applyReviewResult(currentSessions, submittedSessionId, review))
             setGenerationStatus('idle')
             setGenerationMessage({
                 tone: 'info',
@@ -170,15 +122,7 @@ export function ReviewProvider({ children }: ReviewProviderProps) {
             const abortReason = abortReasonRef.current
 
             setGenerationStatus('idle')
-            setGenerationMessage({
-                tone: wasAborted && abortReason === 'cancel' ? 'info' : 'warning',
-                text:
-          wasAborted && abortReason === 'timeout'
-              ? `Review timed out after ${REVIEW_GENERATION_TIMEOUT_SECONDS} seconds.`
-              : wasAborted
-                  ? 'Review was cancelled.'
-                  : getErrorMessage(error),
-            })
+            setGenerationMessage(createReviewGenerationMessage(error, wasAborted, abortReason))
         } finally {
             if (abortControllerRef.current === abortController) {
                 abortControllerRef.current = null
@@ -191,21 +135,7 @@ export function ReviewProvider({ children }: ReviewProviderProps) {
 
     const dismissIssue = useCallback(
         (issueId: string) => {
-            setSessions((currentSessions) =>
-                currentSessions.map((session) =>
-                    session.id === activeSessionId && session.result
-                        ? {
-                            ...session,
-                            result: {
-                                ...session.result,
-                                issues: session.result.issues.map((issue) =>
-                                    issue.id === issueId ? { ...issue, dismissed: true } : issue,
-                                ),
-                            },
-                        }
-                        : session,
-                ),
-            )
+            setSessions((currentSessions) => dismissReviewIssue(currentSessions, activeSessionId, issueId))
         },
         [activeSessionId],
     )

@@ -1,57 +1,24 @@
 import { useMemo, useState } from 'react'
 import {
     COPY_FEEDBACK_DURATION_MS,
-    HIGH_CONFIDENCE_THRESHOLD,
     ISSUE_LEVEL_LABELS,
-    MEDIUM_CONFIDENCE_THRESHOLD,
     REVIEW_CATEGORY_LABELS,
     REVIEW_CATEGORY_ORDER,
 } from '../constants'
 import type { IssueLevelFilter } from '../constants'
 import { useReview } from '../hooks/useReview'
-import type { ReviewCategory, ReviewIssue, ReviewSeverity } from '../types/review'
+import {
+    formatIssueForCopy,
+    formatIssuesForCopy,
+    getCategoryCounts,
+    getConfidenceLabel,
+    getFilteredIssues,
+    getSeverityClassName,
+    getVisibleIssues,
+} from '../services/reviewIssueService'
+import type { ReviewCategory, ReviewIssue } from '../types/review'
 import { renderInlineHtml } from '../utils'
 import { Icon } from './Icon'
-
-const getConfidenceLabel = (confidence: number) => {
-    if (confidence >= HIGH_CONFIDENCE_THRESHOLD) {
-        return 'High'
-    }
-
-    if (confidence >= MEDIUM_CONFIDENCE_THRESHOLD) {
-        return 'Medium'
-    }
-
-    return 'Low'
-}
-
-const matchesConfidence = (issue: ReviewIssue, filter: IssueLevelFilter) => {
-    if (filter === 'all') {
-        return true
-    }
-
-    const label = getConfidenceLabel(issue.confidence).toLowerCase()
-    return label === filter
-}
-
-const compareIssuesByLine = (first: ReviewIssue, second: ReviewIssue) =>
-    (first.line ?? Number.POSITIVE_INFINITY) - (second.line ?? Number.POSITIVE_INFINITY)
-
-const formatIssueForCopy = (issue: ReviewIssue) =>
-    [
-        `${REVIEW_CATEGORY_LABELS[issue.category]} / ${issue.severity.toUpperCase()} / ${getConfidenceLabel(issue.confidence)} confidence`,
-        issue.line ? `Line ${issue.line}` : 'Line not provided',
-        issue.title,
-        issue.description,
-        `Suggested fix: ${issue.suggestion}`,
-    ].join('\n')
-
-const formatIssuesForCopy = (issues: ReviewIssue[]) =>
-    issues.length > 0
-        ? issues.map((issue, index) => `Issue ${index + 1}\n${formatIssueForCopy(issue)}`).join('\n\n')
-        : 'No issues found.'
-
-const getSeverityClassName = (severity: ReviewSeverity) => `severity-${severity}`
 
 function InlineFormattedText({ text }: { text: string }) {
     return <>{renderInlineHtml(text)}</>
@@ -73,33 +40,15 @@ export function ReviewResultsPanel() {
     const [severityFilter, setSeverityFilter] = useState<IssueLevelFilter>('all')
 
     const review = activeSession.result
-    const visibleIssues = useMemo(() => review?.issues.filter((issue) => !issue.dismissed).toSorted(compareIssuesByLine) ?? [], [review])
+    const visibleIssues = useMemo(() => getVisibleIssues(review?.issues), [review])
     const canSubmit = activeSession.code.trim().length > 0 && !isGeneratingReview
 
-    const categoryCounts = useMemo(
-        () =>
-            REVIEW_CATEGORY_ORDER.reduce<Record<ReviewCategory, number>>(
-                (counts, category) => ({
-                    ...counts,
-                    [category]: visibleIssues.filter((issue) => issue.category === category).length,
-                }),
-                {
-                    correctness: 0,
-                    security: 0,
-                    performance: 0,
-                    maintability: 0,
-                    style: 0,
-                    documentation: 0,
-                    other: 0,
-                },
-            ),
-        [visibleIssues],
-    )
+    const categoryCounts = useMemo(() => getCategoryCounts(visibleIssues), [visibleIssues])
 
-    const filteredIssues = visibleIssues.filter((issue) => {
-        const categoryMatches = activeCategory === 'all' || issue.category === activeCategory
-        const severityMatches = severityFilter === 'all' || issue.severity === severityFilter
-        return categoryMatches && severityMatches && matchesConfidence(issue, confidenceFilter)
+    const filteredIssues = getFilteredIssues(visibleIssues, {
+        category: activeCategory,
+        confidence: confidenceFilter,
+        severity: severityFilter,
     })
 
     const handleSubmitReview = () => {

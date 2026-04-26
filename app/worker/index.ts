@@ -40,8 +40,21 @@ app.onError((error, context) => {
 
     console.error(error)
 
-    return context.json({ error: 'Unable to generate code review.' }, 500)
+    return context.json({ error: getReviewGenerationErrorMessage(error) }, 500)
 })
+
+function getReviewGenerationErrorMessage(error: unknown): string {
+    const reason = getSafeErrorReason(error)
+    return `Could not generate review. ${reason ? `Reason: ${reason}` : 'Please try again in a moment.'}`
+}
+
+function getSafeErrorReason(error: unknown): string | null {
+    if (!(error instanceof Error) || !error.message.trim()) {
+        return null
+    }
+
+    return error.message.trim()
+}
 
 async function readJson(request: Request): Promise<unknown> {
     const contentType = request.headers.get('content-type') ?? ''

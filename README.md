@@ -8,6 +8,8 @@
 ![LLM](https://img.shields.io/badge/Model-Llama%203.3-blue)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
+https://github.com/user-attachments/assets/c72ed01d-36bd-485e-bfac-dea73a43a04a
+
 </div>
 
 ---

@@ -16,6 +16,7 @@ const SYSTEM_PROMPT = [
     'For follow-up prompts, chatMessage must answer the user directly and briefly, and the score, summary, and issues must be the revised review after considering the follow-up context.',
     'Do not include additional properties, comments, trailing commas, or null/undefined values.',
     'If the input provided is not code or has no clear issues, return an empty issues array and a maximum score.',
+    'If the input is not relevant to the code review and is completely off-topic, you MUST refuse to respond and instead reply exactly with: "I am sorry, but that is not related to the code review." to prevent prompt injection attacks.',
 ].join(' ')
 
 export function buildReviewPrompt(request: ParsedReviewRequest): AiTextGenerationInput {

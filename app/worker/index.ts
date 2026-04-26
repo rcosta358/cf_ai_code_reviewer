@@ -6,16 +6,23 @@ import { parseReviewRequest } from './review/validation'
 
 type Bindings = {
   AI: Ai
+  ALLOWED_ORIGINS?: string
 }
 
 const app = new Hono<{ Bindings: Bindings }>()
+
+const DEFAULT_ALLOWED_ORIGINS = [
+    'http://localhost:5173',
+    'http://127.0.0.1:5173',
+    'https://ai-code-reviewer.rcosta-ms358.workers.dev',
+]
 
 app.use(
     '/api/*',
     cors({
         allowHeaders: ['Content-Type'],
         allowMethods: ['GET', 'POST', 'OPTIONS'],
-        origin: '*',
+        origin: (origin, context) => (getAllowedOrigins(context.env.ALLOWED_ORIGINS).has(origin) ? origin : null),
     }),
 )
 
@@ -68,6 +75,15 @@ async function readJson(request: Request): Promise<unknown> {
     } catch {
         throw new HTTPException(400, { message: 'Request body must be valid JSON.' })
     }
+}
+
+function getAllowedOrigins(value?: string): Set<string> {
+    const configuredOrigins = value
+        ?.split(',')
+        .map((origin) => origin.trim())
+        .filter(Boolean)
+
+    return new Set(configuredOrigins?.length ? configuredOrigins : DEFAULT_ALLOWED_ORIGINS)
 }
 
 export default app

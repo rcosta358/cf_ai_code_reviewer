@@ -21,6 +21,9 @@
 		"binding": "AI",
 		"remote": true
 	},
+	"vars": {
+		"ALLOWED_ORIGINS": "http://localhost:5173,http://127.0.0.1:5173,https://ai-code-reviewer.rcosta-ms358.workers.dev"
+	},
 	// "kv_namespaces": [
 	// 	{
 	// 		"binding": "KV",
@@ -44,7 +47,6 @@
 	 * Note: Use secrets to store sensitive data.
 	 * https://developers.cloudflare.com/workers/configuration/secrets/
 	 */
-	// "vars": {  "MY_VARIABLE": "production_value" }
 	/**
 	 * Service Bindings (communicate between multiple Workers)
 	 * https://developers.cloudflare.com/workers/wrangler/configuration/#service-bindings

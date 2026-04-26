@@ -47,3 +47,6 @@ This file contains the prompts used for Codex with GPT-5.5 (Medium). An `AGENTS.
 > pressing tab on the editor should add a tab, not focus on the browser search bar
 
 > add a file with a mock review for testing that can be used by changing a boolean flag in the .env
+
+> change the cors policy in the worker from * to only localhost:5173 and https://ai-code-reviewer.rcosta-ms358.workers.dev
+

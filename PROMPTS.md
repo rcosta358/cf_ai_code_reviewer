@@ -37,3 +37,5 @@ This file contains the prompts used for Codex with GPT-5.5 (Medium). An `AGENTS.
 > there is a problem with the editor. for example, when clicking to move to a specific line in the editor, the position is sometimes slightly offset vertically. also, when selecting all text in a scrollable textarea, the selection does not align correctly with the content and is also vertically misaligned. fix this.
 
 > the alignment is still not working. instead of having an absolute div for the line highlighting, lets just scroll to the line and select it. also change the selection color to the same as the line highlighting color.
+
+> order issues from the review by line

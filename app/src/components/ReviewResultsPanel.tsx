@@ -34,6 +34,9 @@ const matchesConfidence = (issue: ReviewIssue, filter: IssueLevelFilter) => {
     return label === filter
 }
 
+const compareIssuesByLine = (first: ReviewIssue, second: ReviewIssue) =>
+    (first.line ?? Number.POSITIVE_INFINITY) - (second.line ?? Number.POSITIVE_INFINITY)
+
 const formatIssueForCopy = (issue: ReviewIssue) =>
     [
         `${REVIEW_CATEGORY_LABELS[issue.category]} / ${issue.severity.toUpperCase()} / ${getConfidenceLabel(issue.confidence)} confidence`,
@@ -70,7 +73,7 @@ export function ReviewResultsPanel() {
     const [severityFilter, setSeverityFilter] = useState<IssueLevelFilter>('all')
 
     const review = activeSession.result
-    const visibleIssues = useMemo(() => review?.issues.filter((issue) => !issue.dismissed) ?? [], [review])
+    const visibleIssues = useMemo(() => review?.issues.filter((issue) => !issue.dismissed).toSorted(compareIssuesByLine) ?? [], [review])
     const canSubmit = activeSession.code.trim().length > 0 && !isGeneratingReview
 
     const categoryCounts = useMemo(

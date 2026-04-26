@@ -51,8 +51,12 @@ function normalizeReviewResult(result: ModelReviewResult): ReviewResult {
         createdAt: new Date().toISOString(),
         score: clampNumber(result.score, 0, 10, 0),
         summary: normalizeString(result.summary, 'Review completed.'),
-        issues: issues.map(normalizeIssue),
+        issues: issues.map(normalizeIssue).sort(compareIssuesByLine),
     }
+}
+
+function compareIssuesByLine(first: ReturnType<typeof normalizeIssue>, second: ReturnType<typeof normalizeIssue>) {
+    return (first.line ?? Number.POSITIVE_INFINITY) - (second.line ?? Number.POSITIVE_INFINITY)
 }
 
 function normalizeIssue(issue: ModelReviewIssue, index: number) {

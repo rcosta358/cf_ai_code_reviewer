@@ -18,13 +18,13 @@ export async function reviewCode(ai: Ai, request: ParsedReviewRequest): Promise<
 }
 
 function parseModelOutput(output: AiTextGenerationOutput): ModelReviewResult {
-    const { response } = output
+    const response: unknown = output.response
 
-    if (!response) {
+    if (typeof response !== 'string' && (!response || typeof response !== 'object')) {
         throw new Error('AI response did not include review content.')
     }
 
-    const json = parseJsonString(stripMarkdownFence(response))
+    const json = typeof response === 'string' ? parseJsonString(stripMarkdownFence(response)) : response
     const result = modelReviewResultSchema.safeParse(json)
 
     if (!result.success) {

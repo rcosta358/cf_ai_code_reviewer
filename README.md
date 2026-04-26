@@ -1,6 +1,16 @@
+<div align="center">
+
 # AI Code Reviewer
 
-Lightweight AI-powered code review application that uses Llama 3.3 to analyze code snippets and provide structured feedback in a single interaction, like Grammarly but for code. Its goal is to provide a simple and developer-friendly way for developers to quickly get feedback on their code, focused on usability and actionable feedback. Reviews are primarily one-shot without requiring any conversational interaction, though optional follow-up interaction is possible, where the LLM can then make changes to their suggestions based on the users feedback.
+**Lightweight AI code review application that analyzes code snippets and provides actionable feedback using Cloudflare Workers AI**
+
+![Cloudflare Workers](https://img.shields.io/badge/Cloudflare-Workers-orange)
+![LLM](https://img.shields.io/badge/Model-Llama%203.3-blue)
+[![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
+</div>
+
+---
 
 ## Features
 
@@ -8,7 +18,8 @@ Lightweight AI-powered code review application that uses Llama 3.3 to analyze co
 - Covers multiple aspects of code quality (correctness, security, maintability, performance, etc.)
 - Each issue is annotated with a explanation, suggestion, severity, and confidence level, and with the position in the source code
 - Overall rating and summary of the review
-- Maintains review history and caches results for identical inputs
+- Follow-up chat to ask for clarifications or further suggestions
+- Stores past reviews, review history and caches results for identical inputs
 
 ## Workflow
 

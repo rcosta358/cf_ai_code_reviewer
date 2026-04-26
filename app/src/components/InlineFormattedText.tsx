@@ -26,7 +26,7 @@ function renderInlineHtml(text: string): ReactNode {
         }
 
         const rawTag = match[0]
-        const tag = match[1]?.toLowerCase() as InlineHtmlTag | undefined
+        const tag = readInlineHtmlTag(match[1]?.toLowerCase())
 
         if (tag) {
             if (rawTag.startsWith('</')) {
@@ -60,3 +60,10 @@ function renderInlineHtml(text: string): ReactNode {
     return root.map(renderNode)
 }
 
+function readInlineHtmlTag(value: string | undefined): InlineHtmlTag | null {
+    if (value === 'b' || value === 'code' || value === 'i') {
+        return value
+    }
+
+    return null
+}

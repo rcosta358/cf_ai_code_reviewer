@@ -51,7 +51,7 @@ export const REVIEW_CATEGORIES: ReviewCategory[] = [
     'style',
     'documentation',
     'other',
-] as const
+]
 
 export const REVIEW_CATEGORY_LABELS: Record<ReviewCategory, string> = {
     correctness: 'Correctness',
@@ -65,9 +65,11 @@ export const REVIEW_CATEGORY_LABELS: Record<ReviewCategory, string> = {
 
 export const REVIEW_CATEGORY_ORDER = REVIEW_CATEGORIES
 
-export const REVIEW_SEVERITIES: ReviewSeverity[] = ['low', 'medium', 'high'] as const
+export const REVIEW_SEVERITIES: ReviewSeverity[] = ['low', 'medium', 'high']
 
 export type IssueLevelFilter = 'all' | ReviewSeverity
+
+export const ISSUE_LEVEL_FILTERS: IssueLevelFilter[] = ['all', 'high', 'medium', 'low']
 
 export const ISSUE_LEVEL_LABELS: Record<IssueLevelFilter, string> = {
     all: 'All',
@@ -80,6 +82,7 @@ export const HIGH_CONFIDENCE_THRESHOLD = 0.8
 export const MEDIUM_CONFIDENCE_THRESHOLD = 0.6
 
 export const MAX_CODE_LENGTH = 50_000
+export const MAX_SESSION_COUNT = 100
 
 export const REVIEW_MODEL = '@cf/meta/llama-3.3-70b-instruct-fp8-fast'
 export const MAX_MODEL_TOKENS = 2048

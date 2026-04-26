@@ -1,6 +1,12 @@
 import { useEffect, useState } from 'react'
+import type { Dispatch, SetStateAction } from 'react'
+import type { ZodType } from 'zod'
 
-export function useLocalStorage<T>(key: string, initialValue: T) {
+export function useLocalStorage<T>(
+    key: string,
+    initialValue: T,
+    schema: ZodType<T>,
+): [T, Dispatch<SetStateAction<T>>] {
     const [value, setValue] = useState<T>(() => {
         if (typeof window === 'undefined') {
             return initialValue
@@ -8,7 +14,12 @@ export function useLocalStorage<T>(key: string, initialValue: T) {
 
         try {
             const storedValue = window.localStorage.getItem(key)
-            return storedValue ? (JSON.parse(storedValue) as T) : initialValue
+            if (!storedValue) {
+                return initialValue
+            }
+
+            const result = schema.safeParse(JSON.parse(storedValue))
+            return result.success ? result.data : initialValue
         } catch {
             return initialValue
         }
@@ -22,5 +33,5 @@ export function useLocalStorage<T>(key: string, initialValue: T) {
         }
     }, [key, value])
 
-    return [value, setValue] as const
+    return [value, setValue]
 }

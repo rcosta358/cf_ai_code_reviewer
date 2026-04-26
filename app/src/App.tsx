@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react'
-import type { CSSProperties, PointerEvent as ReactPointerEvent } from 'react'
+import type { CSSProperties, PointerEvent } from 'react'
 import { CodeReviewWorkspace } from './components/CodeReviewWorkspace'
 import { InsightPanel } from './components/InsightPanel'
 import { SessionSidebar } from './components/SessionSidebar'
@@ -17,6 +17,11 @@ import { ThemeProvider } from './contexts/ThemeContext'
 
 const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max)
 
+type AppStyleProps = CSSProperties & {
+  '--left-panel-width': string
+  '--right-panel-width': string
+}
+
 function App() {
     const [isLeftCollapsed, setIsLeftCollapsed] = useState(false)
     const [isRightCollapsed, setIsRightCollapsed] = useState(false)
@@ -24,12 +29,12 @@ function App() {
     const [rightPanelWidth, setRightPanelWidth] = useState(RIGHT_PANEL_DEFAULT_WIDTH)
 
     const startResize = useCallback(
-        (panel: 'left' | 'right') => (event: ReactPointerEvent<HTMLDivElement>) => {
+        (panel: 'left' | 'right') => (event: PointerEvent<HTMLDivElement>) => {
             event.preventDefault()
             const pointerX = event.clientX
             const width = panel === 'left' ? leftPanelWidth : rightPanelWidth
 
-            const handleResize = (moveEvent: PointerEvent) => {
+            const handleResize = (moveEvent: globalThis.PointerEvent) => {
                 const delta = moveEvent.clientX - pointerX
 
                 if (panel === 'left') {
@@ -57,15 +62,15 @@ function App() {
 
     const currentLeftPanelWidth = isLeftCollapsed ? COLLAPSED_PANEL_WIDTH : leftPanelWidth
     const currentRightPanelWidth = isRightCollapsed ? COLLAPSED_PANEL_WIDTH : rightPanelWidth
-    const shellStyle = {
+    const style: AppStyleProps = {
         '--left-panel-width': `${currentLeftPanelWidth}px`,
         '--right-panel-width': `${currentRightPanelWidth}px`,
-    } as CSSProperties
+    }
 
     return (
         <ThemeProvider>
             <ReviewProvider>
-                <div className="app-shell" style={shellStyle}>
+                <div className="app-shell" style={style}>
                     <SessionSidebar isCollapsed={isLeftCollapsed} onToggleCollapse={() => setIsLeftCollapsed((value) => !value)} />
                     {!isLeftCollapsed && (
                         <div

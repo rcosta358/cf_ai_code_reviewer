@@ -4,6 +4,7 @@ import { HTTPException } from 'hono/http-exception'
 import { reviewCode } from './review/service'
 import { parseReviewRequest } from './review/validation'
 import { clearReviewState, loadReviewState, parseUserSessionId, saveReviewState } from './session/storage'
+import type { JsonValue } from '../src/types/json'
 
 type Bindings = {
   AI: Ai
@@ -76,22 +77,22 @@ app.onError((error, context) => {
     return context.json({ error: getApiErrorMessage(context.req.path, error) }, 500)
 })
 
-function getApiErrorMessage(path: string, error: unknown): string {
+function getApiErrorMessage(path: string, error: Error): string {
     const reason = getSafeErrorReason(error)
     const action = path.startsWith('/api/review') ? 'generate review' : 'sync saved reviews'
 
     return `Could not ${action}. ${reason || 'Please try again in a moment.'}`
 }
 
-function getSafeErrorReason(error: unknown): string | null {
-    if (!(error instanceof Error) || !error.message.trim()) {
+function getSafeErrorReason(error: Error): string | null {
+    if (!error.message.trim()) {
         return null
     }
 
     return error.message.trim()
 }
 
-async function readJson(request: Request): Promise<unknown> {
+async function readJson(request: Request): Promise<JsonValue> {
     const contentType = request.headers.get('content-type') ?? ''
 
     if (!contentType.includes('application/json')) {
@@ -99,7 +100,8 @@ async function readJson(request: Request): Promise<unknown> {
     }
 
     try {
-        return await request.json()
+        const payload: JsonValue = await request.json()
+        return payload
     } catch {
         throw new HTTPException(400, { message: 'Request body must be valid JSON.' })
     }

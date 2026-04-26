@@ -1,4 +1,4 @@
-import { ISSUE_LEVEL_LABELS } from '../constants'
+import { ISSUE_LEVEL_FILTERS, ISSUE_LEVEL_LABELS } from '../constants'
 import type { IssueLevelFilter } from '../constants'
 
 type ReviewFiltersProps = {
@@ -18,10 +18,10 @@ export function ReviewFilters({
         <section className="review-filters" aria-label="Review filters">
             <label>
                 Severity
-                <select value={severityFilter} onChange={(event) => onSeverityFilterChange(event.target.value as IssueLevelFilter)}>
-                    {Object.entries(ISSUE_LEVEL_LABELS).map(([value, label]) => (
+                <select value={severityFilter} onChange={(event) => onSeverityFilterChange(readIssueLevelFilter(event.target.value))}>
+                    {ISSUE_LEVEL_FILTERS.map((value) => (
                         <option key={value} value={value}>
-                            {label}
+                            {ISSUE_LEVEL_LABELS[value]}
                         </option>
                     ))}
                 </select>
@@ -31,15 +31,19 @@ export function ReviewFilters({
                 Confidence
                 <select
                     value={confidenceFilter}
-                    onChange={(event) => onConfidenceFilterChange(event.target.value as IssueLevelFilter)}
+                    onChange={(event) => onConfidenceFilterChange(readIssueLevelFilter(event.target.value))}
                 >
-                    {Object.entries(ISSUE_LEVEL_LABELS).map(([value, label]) => (
+                    {ISSUE_LEVEL_FILTERS.map((value) => (
                         <option key={value} value={value}>
-                            {label}
+                            {ISSUE_LEVEL_LABELS[value]}
                         </option>
                     ))}
                 </select>
             </label>
         </section>
     )
+}
+
+function readIssueLevelFilter(value: string): IssueLevelFilter {
+    return ISSUE_LEVEL_FILTERS.find((filter) => filter === value) ?? 'all'
 }

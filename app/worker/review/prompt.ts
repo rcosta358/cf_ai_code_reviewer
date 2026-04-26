@@ -16,7 +16,7 @@ const SYSTEM_PROMPT = [
     'If the input provided is not code or has no clear issues, return an empty issues array and a maximum score.',
 ].join(' ')
 
-export function buildReviewPrompt(request: ParsedReviewRequest) {
+export function buildReviewPrompt(request: ParsedReviewRequest): AiTextGenerationInput {
     return {
         messages: [
             {
@@ -38,7 +38,7 @@ export function buildReviewPrompt(request: ParsedReviewRequest) {
             type: 'json_schema',
             json_schema: reviewResponseSchema,
         },
-    } satisfies AiTextGenerationInput
+    }
 }
 
 function formatCodeWithLineNumbers(code: string) {

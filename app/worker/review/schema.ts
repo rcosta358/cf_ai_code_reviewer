@@ -53,4 +53,4 @@ export const reviewResponseSchema = {
             },
         },
     },
-} as const
+}

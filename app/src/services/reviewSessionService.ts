@@ -71,7 +71,7 @@ export function dismissReviewIssue(
 }
 
 export function createReviewGenerationMessage(
-    error: unknown,
+    error: Error | null,
     wasAborted: boolean,
     abortReason: AbortReason,
 ): ReviewGenerationMessage {
@@ -108,8 +108,8 @@ function createSessionTitle(code: string, index: number) {
     return firstLine ? firstLine.slice(0, 42) : `Review ${index}`
 }
 
-function getErrorMessage(error: unknown) {
-    if (error instanceof Error && error.message) {
+function getErrorMessage(error: Error | null) {
+    if (error?.message) {
         return error.message
     }
 

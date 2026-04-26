@@ -1,29 +1,31 @@
 import { HTTPException } from 'hono/http-exception'
+import type { JsonValue } from '../../src/types/json'
 import type { ReviewSession } from '../../src/types/review'
+import { persistedReviewStateSchema } from '../../src/validation/reviewSchemas'
 
 export type PersistedReviewState = {
   activeSessionId: string
   sessions: ReviewSession[]
 }
 
-const MAX_SESSION_COUNT = 100
 const MAX_SESSION_KEY_LENGTH = 128
 const SESSION_KEY_PATTERN = /^[A-Za-z0-9_-]+$/
 
 export async function loadReviewState(kv: KVNamespace, userSessionId: string): Promise<PersistedReviewState> {
-    const storedState = await kv.get<PersistedReviewState>(getReviewStateKey(userSessionId), 'json')
+    const storedState = await kv.get<JsonValue>(getReviewStateKey(userSessionId), 'json')
+    const result = storedState ? persistedReviewStateSchema.safeParse(storedState) : null
 
-    if (!storedState || !isPersistedReviewState(storedState)) {
+    if (!result?.success) {
         return {
             activeSessionId: '',
             sessions: [],
         }
     }
 
-    return storedState
+    return result.data
 }
 
-export async function saveReviewState(kv: KVNamespace, userSessionId: string, payload: unknown) {
+export async function saveReviewState(kv: KVNamespace, userSessionId: string, payload: JsonValue) {
     const state = parsePersistedReviewState(payload)
 
     await kv.put(getReviewStateKey(userSessionId), JSON.stringify(state))
@@ -45,41 +47,12 @@ function getReviewStateKey(userSessionId: string) {
     return `review-session:${userSessionId}`
 }
 
-function parsePersistedReviewState(payload: unknown): PersistedReviewState {
-    if (!isPersistedReviewState(payload)) {
+function parsePersistedReviewState(payload: JsonValue): PersistedReviewState {
+    const result = persistedReviewStateSchema.safeParse(payload)
+
+    if (!result.success) {
         throw new HTTPException(400, { message: 'Invalid review session payload.' })
     }
 
-    return payload
-}
-
-function isPersistedReviewState(value: unknown): value is PersistedReviewState {
-    if (!isRecord(value) || typeof value.activeSessionId !== 'string' || !Array.isArray(value.sessions)) {
-        return false
-    }
-
-    if (value.sessions.length > MAX_SESSION_COUNT) {
-        return false
-    }
-
-    return value.sessions.every(isReviewSession)
-}
-
-function isReviewSession(value: unknown): value is ReviewSession {
-    if (!isRecord(value)) {
-        return false
-    }
-
-    return (
-        typeof value.id === 'string' &&
-        typeof value.title === 'string' &&
-        typeof value.code === 'string' &&
-        typeof value.createdAt === 'string' &&
-        typeof value.updatedAt === 'string' &&
-        (value.result === null || isRecord(value.result))
-    )
-}
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-    return typeof value === 'object' && value !== null
+    return result.data
 }

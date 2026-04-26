@@ -1,13 +1,8 @@
 import type { ReviewResult } from '../types/review'
 import { API_REVIEW_ENDPOINT, MOCK_REVIEW_DELAY_MS, USE_MOCK_REVIEW } from '../constants'
 import { mockReview } from './mockReview'
-
-const readApiError = (body: unknown) => {
-    if (typeof body === 'object' && body && 'error' in body && typeof body.error === 'string') {
-        return body.error
-    }
-    return 'Review generation failed.'
-}
+import type { JsonValue } from '../types/json'
+import { apiErrorSchema, reviewResultSchema } from '../validation/reviewSchemas'
 
 export async function generateReview(code: string, signal?: AbortSignal): Promise<ReviewResult> {
     if (USE_MOCK_REVIEW) {
@@ -33,13 +28,34 @@ export async function generateReview(code: string, signal?: AbortSignal): Promis
         signal,
     })
 
-    const body = await response.json().catch(() => null)
+    const body = await readJsonResponse(response)
 
     if (!response.ok) {
         throw new Error(readApiError(body))
     }
 
-    return body as ReviewResult
+    const review = reviewResultSchema.safeParse(body)
+
+    if (!review.success) {
+        throw new Error('Review response was invalid.')
+    }
+
+    return review.data
+}
+
+async function readJsonResponse(response: Response): Promise<JsonValue | null> {
+    try {
+        const body: JsonValue = await response.json()
+        return body
+    } catch {
+        return null
+    }
+}
+
+function readApiError(body: JsonValue | null) {
+    const result = apiErrorSchema.safeParse(body)
+
+    return result.success ? result.data.error : 'Review generation failed.'
 }
 
 function waitForMockReview(signal?: AbortSignal) {

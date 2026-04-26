@@ -92,14 +92,16 @@ export function ReviewProvider({ children }: ReviewProviderProps) {
     }, [])
 
     useEffect(() => {
-        if (!hasLoadedPersistedState || !userSessionIdRef.current) {
+        const userSessionId = userSessionIdRef.current
+
+        if (!hasLoadedPersistedState || !userSessionId) {
             return
         }
 
         const abortController = new AbortController()
         const timeoutId = window.setTimeout(() => {
             void savePersistedReviewState(
-                userSessionIdRef.current as string,
+                userSessionId,
                 { activeSessionId, sessions },
                 abortController.signal,
             ).catch((error) => {
@@ -192,7 +194,7 @@ export function ReviewProvider({ children }: ReviewProviderProps) {
             const abortReason = abortReasonRef.current
 
             setGenerationStatus('idle')
-            setGenerationMessage(createReviewGenerationMessage(error, wasAborted, abortReason))
+            setGenerationMessage(createReviewGenerationMessage(error instanceof Error ? error : null, wasAborted, abortReason))
         } finally {
             if (abortControllerRef.current === abortController) {
                 abortControllerRef.current = null

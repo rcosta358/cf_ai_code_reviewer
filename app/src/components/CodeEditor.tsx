@@ -3,6 +3,7 @@ import { COPY_FEEDBACK_DURATION_MS, DEFAULT_EDITOR_METRICS } from '../constants'
 import { useCodeHighlight } from '../hooks/useCodeHighlight'
 import { useCursorPosition } from '../hooks/useCursorPosition'
 import { Icon } from './Icon'
+import type { CodeExample } from '../examples'
 
 export type EditorCursorPosition = {
   column: number
@@ -12,9 +13,12 @@ export type EditorCursorPosition = {
 type CodeEditorProps = {
   code: string
   disabled?: boolean
+  exampleOptions: readonly CodeExample[]
   focusedLine: number | null
   onCursorPositionChange: (cursorPosition: EditorCursorPosition) => void
   onChange: (code: string) => void
+  onSelectExample: (code: string) => void
+  selectedExampleId: string
 }
 
 function getLineSelectionRange(code: string, line: number) {
@@ -40,7 +44,16 @@ function getLineSelectionRange(code: string, line: number) {
     return { end, start }
 }
 
-export function CodeEditor({ code, disabled = false, focusedLine, onChange, onCursorPositionChange }: CodeEditorProps) {
+export function CodeEditor({
+    code,
+    disabled = false,
+    exampleOptions,
+    focusedLine,
+    onChange,
+    onCursorPositionChange,
+    onSelectExample,
+    selectedExampleId,
+}: CodeEditorProps) {
     const highlightRef = useRef<HTMLPreElement>(null)
     const lineNumberRef = useRef<HTMLTextAreaElement>(null)
     const textareaRef = useRef<HTMLTextAreaElement>(null)
@@ -122,10 +135,34 @@ export function CodeEditor({ code, disabled = false, focusedLine, onChange, onCu
                     <span className="language-badge">{language}</span>
                 </div>
 
-                <button className="secondary-button" disabled={!hasCode} onClick={handleCopy} type="button">
-                    <Icon name={copied ? 'check' : 'copy'} />
-                    {copied ? 'Copied' : 'Copy'}
-                </button>
+                <div className="editor-toolbar-actions">
+                    <label className="example-select">
+                        <select
+                            aria-label="Load example code"
+                            disabled={disabled}
+                            onChange={(event) => {
+                                const selectedExample = exampleOptions.find((example) => example.id === event.target.value)
+
+                                if (selectedExample) {
+                                    onSelectExample(selectedExample.code)
+                                }
+                            }}
+                            value={selectedExampleId}
+                        >
+                            <option value="">Select example</option>
+                            {exampleOptions.map((example) => (
+                                <option key={example.id} value={example.id}>
+                                    {example.label}
+                                </option>
+                            ))}
+                        </select>
+                    </label>
+
+                    <button className="secondary-button" disabled={!hasCode} onClick={handleCopy} type="button">
+                        <Icon name={copied ? 'check' : 'copy'} />
+                        {copied ? 'Copied' : 'Copy'}
+                    </button>
+                </div>
             </div>
 
             <div className="code-editor">

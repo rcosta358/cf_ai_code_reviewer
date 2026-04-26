@@ -26,6 +26,7 @@ body {
 }
 
 button,
+select,
 textarea {
   font: inherit;
 }
@@ -322,6 +323,15 @@ h3 {
   font-weight: 700;
 }
 
+.editor-toolbar-actions {
+  display: flex;
+  min-width: 0;
+  flex: 0 1 auto;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
 .editor-metadata {
   display: flex;
   min-width: 0;
@@ -340,6 +350,38 @@ h3 {
   background: var(--primary-soft);
   font-size: 0.78rem;
   font-weight: 900;
+}
+
+.example-select {
+  display: inline-flex;
+  min-width: 0;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 900;
+
+  select {
+    width: min(220px, 28vw);
+    height: 36px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0 34px 0 10px;
+    color: var(--text);
+    background: var(--panel);
+    font-size: 0.86rem;
+    font-weight: 800;
+
+    &:disabled {
+      cursor: progress;
+      opacity: 0.58;
+    }
+
+    &:focus-visible {
+      outline: none;
+      box-shadow: var(--focus);
+    }
+  }
 }
 
 .secondary-button {

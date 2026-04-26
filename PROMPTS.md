@@ -39,3 +39,5 @@ This file contains the prompts used for Codex with GPT-5.5 (Medium). An `AGENTS.
 > the alignment is still not working. instead of having an absolute div for the line highlighting, lets just scroll to the line and select it. also change the selection color to the same as the line highlighting color.
 
 > order issues from the review by line
+
+> add a dropdown to select examples to test the app. add a folder with python, c, and javascript files with bad sample code that are read when the user selects the dropdown and selects it. add this dropdown right above the editor to the right

@@ -21,10 +21,10 @@ The prompts used can be found in [`PROMPTS.md`](./PROMPTS.md).
 
 - Code review with structured feedback
 - Covers multiple aspects of code quality (correctness, security, maintainability, performance, style, documentation, and other)
-- Each issue is annotated with an explanation, suggestion, severity, confidence level, and source-code position
+- Each issue is annotated with an explanation, suggestion, severity, confidence level, and source code position
 - Overall rating and summary of the review
 - Stores review sessions
-- Follow-up chat to ask for clarifications or further suggestions
+- Follow-up chat to ask for clarifications, further suggestions, or provide additional context that may change the review
 
 ## Workflow
 
@@ -61,7 +61,7 @@ This app is deployed on Cloudflare Workers and can be accessed at:
 
 https://ai-code-reviewer.r1c4rdco5t4-f9d.workers.dev
 
-### Local setup
+### Local Setup
 
 Requirements:
 

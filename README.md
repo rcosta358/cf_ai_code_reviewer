@@ -15,7 +15,7 @@
 ## Features
 
 - Code review with structured feedback
-- Covers multiple aspects of code quality (correctness, security, maintability, performance, etc.)
+- Covers multiple aspects of code quality (correctness, security, maintability, performance, style, documentation, and other)
 - Each issue is annotated with a explanation, suggestion, severity, and confidence level, and with the position in the source code
 - Overall rating and summary of the review
 - Stores review sessions

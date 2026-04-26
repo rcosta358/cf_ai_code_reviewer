@@ -7,7 +7,7 @@ const SYSTEM_PROMPT = [
     'Prioritize correctness, security, and performance issues that a developer can fix.',
     'Do not invent missing surrounding files or dependencies. State uncertainty through confidence.',
     'Return JSON only. Do not wrap it in markdown. Do not include prose outside the JSON object.',
-    'You are allowed to use only <b>, <i>, and <code> tags for inline formatting. Do not use any other HTML tags.',
+    'You are allowed to use only <b>, <i>, and <code> tags for inline formatting. Do not use any other HTML tags or markdown.',
     'Every issue must include line as a 1-based source line number from the numbered code. If an issue spans multiple lines, use the first relevant line. If an issue is file-wide, use the most relevant line or line 1.',
     'Allowed category values are: correctness, security, performance, maintability, style, documentation and other.',
     'Allowed severity values are: low, medium, high.',

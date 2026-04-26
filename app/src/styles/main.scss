@@ -658,17 +658,17 @@ h3 {
 }
 
 .session-item {
-  display: flex;
+  display: grid;
   min-width: 0;
   width: 100%;
-  flex-direction: column;
-  gap: 6px;
+  grid-template-columns: minmax(0, 1fr) 34px;
+  align-items: center;
+  gap: 8px;
   border: 1px solid transparent;
   border-radius: 8px;
-  padding: 12px;
+  padding: 6px;
   color: var(--text);
   background: transparent;
-  text-align: left;
 
   &:hover,
   &.is-active {
@@ -683,6 +683,35 @@ h3 {
   &:focus-visible {
     outline: none;
     box-shadow: var(--focus);
+  }
+}
+
+.session-select-button {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 6px;
+  border: 0;
+  border-radius: 6px;
+  padding: 6px;
+  color: inherit;
+  background: transparent;
+  text-align: left;
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: var(--focus);
+  }
+}
+
+.session-delete-button {
+  width: 34px;
+  height: 34px;
+  opacity: 0;
+
+  .session-item:hover &,
+  .session-item:focus-within & {
+    opacity: 1;
   }
 }
 

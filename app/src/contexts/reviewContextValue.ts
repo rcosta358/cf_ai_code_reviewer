@@ -11,8 +11,8 @@ export type ReviewContextValue = {
   generationStatus: ReviewGenerationStatus
   isGeneratingReview: boolean
   sessions: ReviewSession[]
-  clearReviews: () => void
   createSession: () => void
+  deleteSession: (sessionId: string) => void
   selectSession: (sessionId: string) => void
   updateCode: (code: string) => void
   submitReview: () => void

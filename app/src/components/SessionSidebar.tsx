@@ -15,7 +15,7 @@ type SessionSidebarProps = {
 }
 
 export function SessionSidebar({ isCollapsed, onToggleCollapse }: SessionSidebarProps) {
-    const { activeSession, clearReviews, createSession, isGeneratingReview, selectSession, sessions } = useReview()
+    const { activeSession, createSession, deleteSession, isGeneratingReview, selectSession, sessions } = useReview()
 
     return (
         <aside className={`sidebar session-sidebar ${isCollapsed ? 'is-collapsed' : ''}`} aria-label="Review sessions">
@@ -26,20 +26,9 @@ export function SessionSidebar({ isCollapsed, onToggleCollapse }: SessionSidebar
                 </div>
                 <div className="panel-header-actions">
                     {!isCollapsed && (
-                        <>
-                            <button
-                                aria-label="Clear all reviews"
-                                className="icon-button"
-                                disabled={isGeneratingReview}
-                                onClick={clearReviews}
-                                type="button"
-                            >
-                                <Icon name="trash" />
-                            </button>
-                            <button aria-label="Create review session" className="icon-button" onClick={createSession} type="button">
-                                <Icon name="plus" />
-                            </button>
-                        </>
+                        <button aria-label="Create review session" className="icon-button" onClick={createSession} type="button">
+                            <Icon name="plus" />
+                        </button>
                     )}
                     <button
                         aria-label={isCollapsed ? 'Expand sessions panel' : 'Collapse sessions panel'}
@@ -54,17 +43,26 @@ export function SessionSidebar({ isCollapsed, onToggleCollapse }: SessionSidebar
 
             {!isCollapsed && <div className="session-list">
                 {sessions.map((session) => (
-                    <button
+                    <div
                         className={`session-item ${session.id === activeSession.id ? 'is-active' : ''}`}
                         key={session.id}
-                        onClick={() => selectSession(session.id)}
-                        type="button"
                     >
-                        <span className="session-title">{session.title}</span>
-                        <span className="session-meta">
-                            {session.result ? 'Reviewed' : 'Draft'} · {formatSessionTime(session.updatedAt)}
-                        </span>
-                    </button>
+                        <button className="session-select-button" onClick={() => selectSession(session.id)} type="button">
+                            <span className="session-title">{session.title}</span>
+                            <span className="session-meta">
+                                {session.result ? 'Reviewed' : 'Draft'} · {formatSessionTime(session.updatedAt)}
+                            </span>
+                        </button>
+                        <button
+                            aria-label={`Delete ${session.title}`}
+                            className="icon-button session-delete-button"
+                            disabled={isGeneratingReview}
+                            onClick={() => deleteSession(session.id)}
+                            type="button"
+                        >
+                            <Icon name="trash" />
+                        </button>
+                    </div>
                 ))}
             </div>}
         </aside>

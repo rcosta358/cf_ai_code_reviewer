@@ -5,7 +5,6 @@ import { ReviewContext } from './reviewContextValue'
 import type { ReviewContextValue } from './reviewContextValue'
 import { generateReview } from '../services/reviewService'
 import {
-    clearPersistedReviewState,
     getOrCreateUserSessionId,
     loadPersistedReviewState,
     savePersistedReviewState,
@@ -211,31 +210,26 @@ export function ReviewProvider({ children }: ReviewProviderProps) {
         [activeSessionId],
     )
 
-    const clearReviews = useCallback(() => {
-        const newSession = createReviewSession()
+    const deleteSession = useCallback((sessionId: string) => {
+        setSessions((currentSessions) => {
+            const sessionIndex = currentSessions.findIndex((session) => session.id === sessionId)
 
-        abortControllerRef.current?.abort()
-        clearGenerationTimers()
-        abortControllerRef.current = null
-        abortReasonRef.current = null
-        setSessions([newSession])
-        setActiveSessionId(newSession.id)
-        setFocusedSourceLine(null)
-        setGenerationStatus('idle')
-        setGenerationMessage({
-            tone: 'info',
-            text: 'Reviews cleared.',
+            if (sessionIndex === -1) {
+                return currentSessions
+            }
+
+            const remainingSessions = currentSessions.filter((session) => session.id !== sessionId)
+            const nextSessions = remainingSessions.length ? remainingSessions : [createReviewSession()]
+
+            if (sessionId === activeSessionId) {
+                const nextActiveSession = nextSessions[Math.max(0, Math.min(sessionIndex, nextSessions.length - 1))]
+                setActiveSessionId(nextActiveSession.id)
+                setFocusedSourceLine(null)
+            }
+
+            return nextSessions
         })
-
-        if (userSessionIdRef.current) {
-            void clearPersistedReviewState(userSessionIdRef.current).catch((error) => {
-                setGenerationMessage({
-                    tone: 'warning',
-                    text: error instanceof Error ? error.message : 'Could not clear saved reviews.',
-                })
-            })
-        }
-    }, [clearGenerationTimers])
+    }, [activeSessionId])
 
     const focusSourceLine = useCallback((line: number) => {
         setFocusedSourceLine(line)
@@ -245,7 +239,7 @@ export function ReviewProvider({ children }: ReviewProviderProps) {
         () => ({
             activeSession,
             cancelReview,
-            clearReviews,
+            deleteSession,
             dismissIssue,
             focusedSourceLine,
             focusSourceLine,
@@ -261,8 +255,8 @@ export function ReviewProvider({ children }: ReviewProviderProps) {
         [
             activeSession,
             cancelReview,
-            clearReviews,
             createSession,
+            deleteSession,
             dismissIssue,
             focusedSourceLine,
             focusSourceLine,

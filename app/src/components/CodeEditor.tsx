@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState, type KeyboardEvent } from 'react'
 import { COPY_FEEDBACK_DURATION_MS, DEFAULT_EDITOR_METRICS } from '../constants'
 import { useCodeHighlight } from '../hooks/useCodeHighlight'
 import { useCursorPosition } from '../hooks/useCursorPosition'
@@ -42,6 +42,14 @@ function getLineSelectionRange(code: string, line: number) {
     const end = lineEnd > start ? lineEnd : Math.min(start + 1, code.length)
 
     return { end, start }
+}
+
+function insertTabAtSelection(textarea: HTMLTextAreaElement, code: string) {
+    const { selectionEnd, selectionStart } = textarea
+    const nextCode = `${code.slice(0, selectionStart)}\t${code.slice(selectionEnd)}`
+    const nextCursorPosition = selectionStart + 1
+
+    return { nextCode, nextCursorPosition }
 }
 
 export function CodeEditor({
@@ -128,6 +136,22 @@ export function CodeEditor({
         window.setTimeout(() => setCopied(false), COPY_FEEDBACK_DURATION_MS)
     }
 
+    const handleKeyDown = (event: KeyboardEvent<HTMLTextAreaElement>) => {
+        if (event.key !== 'Tab' || disabled) {
+            return
+        }
+
+        event.preventDefault()
+
+        const { nextCode, nextCursorPosition } = insertTabAtSelection(event.currentTarget, code)
+        onChange(nextCode)
+
+        window.requestAnimationFrame(() => {
+            event.currentTarget.setSelectionRange(nextCursorPosition, nextCursorPosition)
+            captureCursor(event.currentTarget)
+        })
+    }
+
     return (
         <>
             <div className="editor-toolbar">
@@ -195,6 +219,7 @@ export function CodeEditor({
                     }}
                     onClick={(event) => captureCursor(event.currentTarget)}
                     onFocus={(event) => captureCursor(event.currentTarget)}
+                    onKeyDown={handleKeyDown}
                     onKeyUp={(event) => captureCursor(event.currentTarget)}
                     onSelect={(event) => captureCursor(event.currentTarget)}
                     onScroll={(event) => {

@@ -45,7 +45,7 @@ app.onError((error, context) => {
 
 function getReviewGenerationErrorMessage(error: unknown): string {
     const reason = getSafeErrorReason(error)
-    return `Could not generate review. ${reason ? `Reason: ${reason}` : 'Please try again in a moment.'}`
+    return `Could not generate review. ${reason || 'Please try again in a moment.'}`
 }
 
 function getSafeErrorReason(error: unknown): string | null {

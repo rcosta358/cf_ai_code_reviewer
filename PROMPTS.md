@@ -43,3 +43,5 @@ This file contains the prompts used for Codex with GPT-5.5 (Medium). An `AGENTS.
 > add a dropdown to select examples to test the app. add a folder with python, c, and javascript files with bad sample code that are read when the user selects the dropdown and selects it. add this dropdown right above the editor to the right
 
 > improve the error message shown to the user in index.ts when the workers request fails, instead of the generic "Unable to generate code review." 
+
+> pressing tab on the editor should add a tab, not focus on the browser search bar

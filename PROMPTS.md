@@ -45,3 +45,5 @@ This file contains the prompts used for Codex with GPT-5.5 (Medium). An `AGENTS.
 > improve the error message shown to the user in index.ts when the workers request fails, instead of the generic "Unable to generate code review." 
 
 > pressing tab on the editor should add a tab, not focus on the browser search bar
+
+> add a file with a mock review for testing that can be used by changing a boolean flag in the constants file

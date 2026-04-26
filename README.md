@@ -4,10 +4,10 @@ Lightweight AI-powered code review application that uses Llama 3.3 to analyze co
 
 ## Features
 
-- One-shot code review with structured feedback
+- Code review with structured feedback
 - Covers multiple aspects of code quality (correctness, security, maintability, performance, etc.)
-- Each issue is annotated with a specific explanation and severity level, highlighting the position in the source code where the problem is located
-- Overall rating and summary of issues and suggestions for improvement, which can be copy pasted into a coding agent
+- Each issue is annotated with a explanation, suggestion, severity, and confidence level, and with the position in the source code
+- Overall rating and summary of the review
 - Maintains review history and caches results for identical inputs
 
 ## Workflow

@@ -1,6 +1,8 @@
 import type { ReviewCategory, ReviewSeverity } from './types/review'
 
 export const API_REVIEW_ENDPOINT = '/api/review'
+export const USE_MOCK_REVIEW = true
+export const MOCK_REVIEW_DELAY_MS = 650
 
 export const THEME_STORAGE_KEY = 'ai-code-reviewer-theme'
 export const DEFAULT_THEME = 'dark'

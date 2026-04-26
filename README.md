@@ -15,7 +15,6 @@ https://github.com/user-attachments/assets/c72ed01d-36bd-485e-bfac-dea73a43a04a
 ---
 
 This project was implemented for the Software Engineering Internship assignment with Codex using GPT-5.5 (Medium).
-
 The prompts used can be found in [`PROMPTS.md`](./PROMPTS.md).
 
 ## Features
@@ -45,6 +44,15 @@ This project was built with React + Vite in TypeScript and deployed as a Cloudfl
 - **LLM** (Workers AI, Llama 3.3): performs code analysis and generates structured feedback
 - **Data Storage** (Cloudflare KV): stores review sessions
 - **Session Storage** (Local Storage): saves user preferences and the user session id
+
+```mermaid
+flowchart LR
+  User --> React
+  React --> Worker
+  Worker --> WorkersAI
+  Worker --> KV
+
+```
 
 ## Getting Started
 

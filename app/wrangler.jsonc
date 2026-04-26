@@ -5,6 +5,7 @@
 {
 	"$schema": "node_modules/wrangler/config-schema.json",
 	"name": "ai-code-reviewer",
+	"account_id": "f9d532e2b610cd3b28581c638feb380b",
 	"main": "worker/index.ts",
 	"compatibility_date": "2026-04-25",
 	"assets": {
@@ -22,13 +23,13 @@
 		"remote": true
 	},
 	"vars": {
-		"ALLOWED_ORIGINS": "http://localhost:5173,http://127.0.0.1:5173,https://ai-code-reviewer.rcosta-ms358.workers.dev"
+		"ALLOWED_ORIGINS": "http://localhost:5173,http://127.0.0.1:5173,https://ai-code-reviewer.r1c4rdco5t4-f9d.workers.dev"
 	},
 	"kv_namespaces": [
 		{
 			"binding": "SESSIONS_KV",
-			"id": "abe8390dd322400e92bac8d5cb2bbe2e",
-			"preview_id": "9c25b1c241094baa860c270303a6a79c"
+			"id": "cb39e1fa811d4136908ec9df7c8fb903",
+			"preview_id": "aa226ea1565a484fac861b5a5f12bd96"
 		},
 	]
 	/**

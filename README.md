@@ -15,8 +15,8 @@
 ## Features
 
 - Code review with structured feedback
-- Covers multiple aspects of code quality (correctness, security, maintability, performance, style, documentation, and other)
-- Each issue is annotated with a explanation, suggestion, severity, and confidence level, and with the position in the source code
+- Covers multiple aspects of code quality (correctness, security, maintainability, performance, style, documentation, and other)
+- Each issue is annotated with an explanation, suggestion, severity, confidence level, and source-code position
 - Overall rating and summary of the review
 - Stores review sessions
 - Follow-up chat to ask for clarifications or further suggestions
@@ -24,19 +24,66 @@
 ## Workflow
 
 1. User pastes code into the editor and clicks the review button
-2. The backend sends the code to the LLM for analysis, with a system prompt that instructs how the LLM should analyze the code and how it should structure the response in JSON format
-3. LLM returns the response
-4. Backend stores the result in the user session
-5. Frontend displays the feedback to the user
+2. The code is sent to the LLM with a system prompt that instructs how it should analyze the code and structure the response in JSON
+3. The LLM returns structured review feedback
+4. The review is displayed to the user
+5. The review is stored in a key-value storage for persistence
+6. The user can ask follow-up questions or provide additional context in the chat, which sends a new request to the LLM with the previous review as context, where the LLM can provide clarifications or update the previous review based on the new information
+
 
 ## Architecture
 
-This project is was built with React+Vite in TypeScript and deployed as a Cloudflare Worker:
-- **Frontend** (Worker Static Assets) - user interface to paste code and see reviews
-- **Backend** (Cloudflare Workers) - handles requests and interacts with the LLM
-- **LLM** (Workers AI, Llama 3.3) - performs code analysis and generates feedback
-- **Data Storage** (Cloudflare KV) - stores review sessions
-- **Session Storage** (Local Storage) - saves user preferences and session id
+This project was built with React + Vite in TypeScript and deployed as a Cloudflare Worker:
+
+- **Frontend** (Worker Static Assets): user interface to paste code, view review results, manage sessions, and chat about a review
+- **Backend** (Cloudflare Workers): handles API requests, validates payloads, calls the LLM, and stores/retrieves sessions
+- **LLM** (Workers AI, Llama 3.3): performs code analysis and generates structured feedback
+- **Data Storage** (Cloudflare KV): stores review sessions
+- **Session Storage** (Local Storage): saves user preferences and the user session id
+
+## Getting Started
+
+### Deployed App
+
+This app is deployed on Cloudflare Workers and can be accessed at:
+
+https://ai-code-reviewer.r1c4rdco5t4-f9d.workers.dev
+
+### Local setup
+
+Requirements:
+
+- Node.js
+- npm
+- A Cloudflare account
+
+Install dependencies:
+
+```sh
+cd app
+npm install
+```
+
+You can set the `VITE_USE_MOCK_REVIEW` variable in `.env.development` to `true` to use a mock review response without calling Workers AI, which is useful for development without consuming AI credits.
+
+Then, login to your Cloudflare account and create a new Cloudflare KV namespace:
+
+```sh
+npx wrangler login
+npx wrangler kv namespace create SESSIONS_KV
+```
+
+Finally, run the development server and open the app in your browser at `http://localhost:5173`:
+
+```sh
+npm run dev
+```
+
+To deploy the app to Cloudflare Workers, run:
+
+```sh
+npm run deploy
+```
 
 ## References
 

@@ -14,12 +14,12 @@ https://github.com/user-attachments/assets/c72ed01d-36bd-485e-bfac-dea73a43a04a
 
 ---
 
-This project was implemented for the Software Engineering Internship assignment with Codex using GPT-5.5 (Medium).
+This project was implemented for the Software Engineering Internship assignment, built with Codex using GPT-5.5 (Medium).
 The prompts used can be found in [`PROMPTS.md`](./PROMPTS.md).
 
 ## Features
 
-- Code review with structured feedback
+- Structured AI code review with actionable feedback
 - Covers multiple aspects of code quality (correctness, security, maintainability, performance, style, documentation, and other)
 - Each issue is annotated with an explanation, suggestion, severity, confidence level, and source code position
 - Overall rating and summary of the review
@@ -33,7 +33,7 @@ The prompts used can be found in [`PROMPTS.md`](./PROMPTS.md).
 3. The LLM returns structured review feedback
 4. The review is displayed to the user
 5. The review is stored in a key-value storage for persistence
-6. The user can ask follow-up questions or provide additional context in the chat, which sends a new request to the LLM with the previous review as context, where the LLM can provide clarifications or update the previous review based on the new information
+6. The user can ask follow-up questions or provide additional information in the chat to get an updated review
 
 ## Architecture
 

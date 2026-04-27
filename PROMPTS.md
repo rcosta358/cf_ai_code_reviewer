@@ -75,3 +75,5 @@ This file contains the prompts used for Codex with GPT-5.5 (Medium).
 > if i have the editor scrolled all the way down the last line appears to not be selected. if i move slightly up the last line goes from line 53 to line 52 and the selection matches. fix this misalignment for both the selection and the lines. they should always match the line numbers.
 
 > implement browser bar tinting so it matches the apps actual background color depending on the theme
+
+> add a github actions workflow that runs npm run deploy triggered on every push or pr to main

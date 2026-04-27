@@ -28,11 +28,11 @@ The prompts used can be found in [`PROMPTS.md`](./PROMPTS.md).
 
 ## Workflow
 
-1. User pastes code into the editor and clicks the review button
-2. The code is sent to the LLM with a system prompt that instructs how it should analyze the code and structure the response in JSON
-3. The LLM returns structured review feedback
-4. The review is stored and displayed to the user
-6. The user can use the chat to ask follow-up questions or provide additional context
+1. User submits code
+2. Backend sends code and system prompt to the LLM
+3. LLM returns structured JSON review
+4. Review is stored and displayed
+5. User can use the chat to ask follow-up questions or provide additional context
 
 Example of the structured review feedback returned by the LLM:
 

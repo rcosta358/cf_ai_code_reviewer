@@ -2,7 +2,7 @@
 
 # AI Code Reviewer
 
-**Lightweight AI code review application that analyzes code snippets and provides actionable feedback using Cloudflare Workers AI**
+**Lightweight AI code review application powered by Cloudflare Workers AI**
 
 ![Cloudflare Workers](https://img.shields.io/badge/Cloudflare-Workers-orange)
 ![LLM](https://img.shields.io/badge/Model-Llama%203.3-blue)

@@ -23,17 +23,16 @@ The prompts used can be found in [`PROMPTS.md`](./PROMPTS.md).
 - Covers multiple aspects of code quality (correctness, security, maintainability, performance, style, documentation, and other)
 - Each issue is annotated with an explanation, suggestion, severity, confidence level, and source code position
 - Overall rating and summary of the review
-- Stores review sessions
-- Follow-up chat to ask for clarifications, further suggestions, or provide additional context that may change the review
+- Review persistence in a key-value storage
+- Follow-up chat to ask for further explanations or provide additional context that may change the review
 
 ## Workflow
 
 1. User pastes code into the editor and clicks the review button
 2. The code is sent to the LLM with a system prompt that instructs how it should analyze the code and structure the response in JSON
 3. The LLM returns structured review feedback
-4. The review is displayed to the user
-5. The review is stored in a key-value storage for persistence
-6. The user can ask follow-up questions or provide additional information in the chat to get an updated review
+4. The review is stored and displayed to the user
+6. The user can use the chat to ask follow-up questions or provide additional content
 
 ## Architecture
 

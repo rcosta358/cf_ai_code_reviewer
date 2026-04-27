@@ -47,7 +47,7 @@ export function getCategoryCounts(issues: ReviewIssue[]) {
             correctness: 0,
             security: 0,
             performance: 0,
-            maintability: 0,
+            maintainability: 0,
             style: 0,
             documentation: 0,
             other: 0,

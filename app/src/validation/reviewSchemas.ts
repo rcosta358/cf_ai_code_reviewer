@@ -19,7 +19,7 @@ export const reviewCategorySchema = z.enum([
     'correctness',
     'security',
     'performance',
-    'maintability',
+    'maintainability',
     'style',
     'documentation',
     'other',

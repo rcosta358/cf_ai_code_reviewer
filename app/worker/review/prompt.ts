@@ -9,7 +9,7 @@ const SYSTEM_PROMPT = [
     'Return JSON only. Do not wrap it in markdown. Do not include prose outside the JSON object.',
     'You are allowed to use only <b>, <i>, and <code> tags for inline formatting. Do not use any other HTML tags or markdown.',
     'Every issue must include line as a 1-based source line number from the numbered code. If an issue spans multiple lines, use the first relevant line. If an issue is file-wide, use the most relevant line or line 1.',
-    'Allowed category values are: correctness, security, performance, maintability, style, documentation and other.',
+    'Allowed category values are: correctness, security, performance, maintainability, style, documentation and other.',
     'Allowed severity values are: low, medium, high.',
     'Use confidence as a number from 0 to 1. Use score as a number from 0 to 10.',
     'The chatMessage field must be an empty string for initial reviews.',

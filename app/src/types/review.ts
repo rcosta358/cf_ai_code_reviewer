@@ -4,7 +4,7 @@ export type ReviewCategory =
   | 'correctness'
   | 'security'
   | 'performance'
-  | 'maintability'
+  | 'maintainability'
   | 'style'
   | 'documentation'
   | 'other'

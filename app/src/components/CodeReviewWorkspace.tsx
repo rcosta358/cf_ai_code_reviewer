@@ -4,6 +4,7 @@ import { CodeEditor } from './CodeEditor'
 import type { EditorCursorPosition } from './CodeEditor'
 import { CODE_EXAMPLES } from '../services/exampleService'
 import { ThemeToggle } from './ThemeToggle'
+import { REVIEW_MODEL } from '../constants'
 
 export function CodeReviewWorkspace() {
     const { activeSession, focusedSourceLine, isGeneratingReview, updateCode } = useReview()
@@ -42,7 +43,7 @@ export function CodeReviewWorkspace() {
                     selectedExampleId={selectedExampleId}
                 />
                 <div className="editor-actions">
-                    <p>{activeSession.result ? 'Latest review is saved in this session.' : 'Each session keeps its own code and review state.'}</p>
+                    <p>{REVIEW_MODEL}</p>
                     <span className="cursor-position">
             Ln {cursorPosition.line}, Col {cursorPosition.column}
                     </span>

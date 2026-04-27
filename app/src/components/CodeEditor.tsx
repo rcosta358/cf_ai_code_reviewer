@@ -40,7 +40,7 @@ export function CodeEditor({
     selectedExampleId,
 }: CodeEditorProps) {
     const highlightRef = useRef<HTMLPreElement>(null)
-    const lineNumberRef = useRef<HTMLTextAreaElement>(null)
+    const lineNumberRef = useRef<HTMLPreElement>(null)
     const textareaRef = useRef<HTMLTextAreaElement>(null)
     const [copied, setCopied] = useState(false)
     const [editorMetrics, setEditorMetrics] = useState(DEFAULT_EDITOR_METRICS)
@@ -60,12 +60,20 @@ export function CodeEditor({
             return
         }
 
-        const syncEditorMetrics = () => {
-            setEditorMetrics(getTextareaEditorMetrics(textarea))
+        const syncEditorScroll = () => {
+            if (highlightRef.current) {
+                highlightRef.current.style.setProperty('--editor-scroll-left', `${textarea.scrollLeft}px`)
+                highlightRef.current.style.setProperty('--editor-scroll-top', `${textarea.scrollTop}px`)
+            }
 
             if (lineNumberRef.current) {
-                lineNumberRef.current.scrollTop = textarea.scrollTop
+                lineNumberRef.current.style.setProperty('--editor-scroll-top', `${textarea.scrollTop}px`)
             }
+        }
+
+        const syncEditorMetrics = () => {
+            setEditorMetrics(getTextareaEditorMetrics(textarea))
+            syncEditorScroll()
         }
 
         syncEditorMetrics()
@@ -117,15 +125,15 @@ export function CodeEditor({
     }
 
     const handleScroll = (event: UIEvent<HTMLTextAreaElement>) => {
+        const textarea = event.currentTarget
+
         if (highlightRef.current) {
-            highlightRef.current.scrollTo({
-                left: event.currentTarget.scrollLeft,
-                top: event.currentTarget.scrollTop,
-            })
+            highlightRef.current.style.setProperty('--editor-scroll-left', `${textarea.scrollLeft}px`)
+            highlightRef.current.style.setProperty('--editor-scroll-top', `${textarea.scrollTop}px`)
         }
 
         if (lineNumberRef.current) {
-            lineNumberRef.current.scrollTop = event.currentTarget.scrollTop
+            lineNumberRef.current.style.setProperty('--editor-scroll-top', `${textarea.scrollTop}px`)
         }
     }
 

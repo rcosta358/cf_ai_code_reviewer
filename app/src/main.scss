@@ -440,6 +440,8 @@ h3 {
   --editor-gutter-width: 58px;
   --editor-font-size: 0.94rem;
   --editor-line-height: 24px;
+  --editor-scroll-left: 0px;
+  --editor-scroll-top: 0px;
 
   position: relative;
   min-height: 0;
@@ -488,6 +490,12 @@ h3 {
   text-align: right;
   user-select: none;
 
+  code {
+    display: block;
+    transform: translateY(calc(var(--editor-scroll-top) * -1));
+    white-space: pre;
+  }
+
   &::-webkit-scrollbar {
     display: none;
   }
@@ -512,7 +520,11 @@ h3 {
 
   &::selection {
     color: var(--text);
-    background: color-mix(in srgb, var(--primary-soft) 72%, transparent);
+    background: color-mix(in srgb, var(--primary-soft) 30%, transparent);
+  }
+
+  &.has-code::selection {
+    color: transparent;
   }
 
   &:focus {
@@ -534,6 +546,10 @@ h3 {
   code {
     display: block;
     min-width: 100%;
+    transform: translate(
+      calc(var(--editor-scroll-left) * -1),
+      calc(var(--editor-scroll-top) * -1)
+    );
     white-space: pre;
   }
 

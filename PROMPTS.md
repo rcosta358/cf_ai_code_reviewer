@@ -71,3 +71,5 @@ This file contains the prompts used for Codex with GPT-5.5 (Medium).
 > in the chat outer section, make the it unscrollable and only scrollable vertically the chat itself with the messages
 
 > as soon as the user presses enter in the chat their message should appear, also, besides the loading state of the send button, add a "thinking..." while we wait for the agent to reply. also the prompt textarea should be preserved when switching between review and chat views
+
+> if i have the editor scrolled all the way down the last line appears to not be selected. if i move slightly up the last line goes from line 53 to line 52 and the selection matches. fix this misalignment for both the selection and the lines. they should always match the line numbers.

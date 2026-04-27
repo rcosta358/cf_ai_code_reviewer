@@ -8,7 +8,7 @@ type CodeEditorInputProps = {
   hasCode: boolean
   highlightedCode: string
   highlightRef: RefObject<HTMLPreElement | null>
-  lineNumberRef: RefObject<HTMLTextAreaElement | null>
+  lineNumberRef: RefObject<HTMLPreElement | null>
   lineNumbers: string
   onChange: ChangeEventHandler<HTMLTextAreaElement>
   onCursorCapture: (element: HTMLTextAreaElement) => void
@@ -34,20 +34,27 @@ export function CodeEditorInput({
 }: CodeEditorInputProps) {
     return (
         <div className="code-editor">
-            <textarea
+            <pre
                 aria-hidden="true"
                 className="line-number-gutter"
-                readOnly
                 ref={lineNumberRef}
                 style={{
                     paddingBottom: editorMetrics.paddingTop + editorMetrics.horizontalScrollbarHeight,
                 }}
                 tabIndex={-1}
-                value={lineNumbers}
-            />
+            >
+                <code>{lineNumbers}</code>
+            </pre>
 
             {hasCode && (
-                <pre className="code-highlight" aria-hidden="true" ref={highlightRef}>
+                <pre
+                    className="code-highlight"
+                    aria-hidden="true"
+                    ref={highlightRef}
+                    style={{
+                        paddingBottom: editorMetrics.paddingTop + editorMetrics.horizontalScrollbarHeight,
+                    }}
+                >
                     <code dangerouslySetInnerHTML={{ __html: highlightedCode }} />
                 </pre>
             )}
@@ -66,6 +73,9 @@ export function CodeEditorInput({
                 onScroll={onScroll}
                 placeholder="Paste your code here to get an AI review"
                 spellCheck={false}
+                style={{
+                    paddingBottom: editorMetrics.paddingTop + editorMetrics.horizontalScrollbarHeight,
+                }}
                 value={code}
                 wrap="off"
             />

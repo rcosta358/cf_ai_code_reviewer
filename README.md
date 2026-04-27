@@ -87,10 +87,11 @@ Requirements:
 - npm
 - A Cloudflare account
 
-Install dependencies:
+Clone and install dependencies:
 
 ```sh
-cd app
+git clone https://github.com/rcosta358/cf_ai_code_reviewer
+cd cf_ai_code_reviewer/app
 npm install
 ```
 

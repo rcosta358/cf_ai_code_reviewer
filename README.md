@@ -85,6 +85,8 @@ npx wrangler login
 npx wrangler kv namespace create SESSIONS_KV
 ```
 
+Then, update `wrangler.jsonc` with the generated KV namespace id.
+
 Finally, run the development server and open the app in your browser at `http://localhost:5173`:
 
 ```sh

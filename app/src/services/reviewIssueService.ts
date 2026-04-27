@@ -43,7 +43,7 @@ export function getCategoryCounts(issues: ReviewIssue[]) {
 
 export function formatIssueForCopy(issue: ReviewIssue) {
     return [
-        `${REVIEW_CATEGORY_LABELS[issue.category]} / ${issue.severity.toUpperCase()} / ${issue.confidence.toUpperCase()} confidence`,
+        `${REVIEW_CATEGORY_LABELS[issue.category]} / ${issue.severity.toUpperCase()} / ${formatIssueLevel(issue.confidence)} confidence`,
         issue.line ? `Line ${issue.line}` : 'Line not provided',
         issue.title,
         issue.description,
@@ -59,6 +59,10 @@ export function formatIssuesForCopy(issues: ReviewIssue[]) {
 
 export function getSeverityClassName(severity: ReviewSeverity) {
     return `severity-${severity}`
+}
+
+export function formatIssueLevel(level: ReviewSeverity) {
+    return level.charAt(0).toUpperCase() + level.slice(1)
 }
 
 function matchesConfidence(issue: ReviewIssue, filter: IssueLevelFilter) {

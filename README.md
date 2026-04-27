@@ -32,7 +32,7 @@ The prompts used can be found in [`PROMPTS.md`](./PROMPTS.md).
 2. The code is sent to the LLM with a system prompt that instructs how it should analyze the code and structure the response in JSON
 3. The LLM returns structured review feedback
 4. The review is stored and displayed to the user
-6. The user can use the chat to ask follow-up questions or provide additional content
+6. The user can use the chat to ask follow-up questions or provide additional context
 
 ## Architecture
 

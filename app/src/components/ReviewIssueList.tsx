@@ -1,8 +1,5 @@
 import { REVIEW_CATEGORY_LABELS } from '../constants'
-import {
-    getConfidenceLabel,
-    getSeverityClassName,
-} from '../services/reviewIssueService'
+import { getSeverityClassName } from '../services/reviewIssueService'
 import type { ReviewIssue } from '../types/review'
 import { Icon } from './Icon'
 import { InlineFormattedText } from './InlineFormattedText'
@@ -82,7 +79,7 @@ function ReviewIssueCard({
 
             <div className="issue-meta">
                 <span>{issue.line ? `Line ${issue.line}` : 'No line'}</span>
-                <span>{getConfidenceLabel(issue.confidence)} confidence</span>
+                <span>{issue.confidence} confidence</span>
             </div>
 
             <div className="issue-suggestion">

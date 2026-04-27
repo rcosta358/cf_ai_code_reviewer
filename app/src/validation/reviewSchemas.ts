@@ -14,6 +14,7 @@ const positiveIntegerSchema = z.preprocess(
 export const themeSchema = z.enum(['light', 'dark'])
 
 export const reviewSeveritySchema = z.enum(['low', 'medium', 'high'])
+export const reviewConfidenceSchema = z.enum(['low', 'medium', 'high'])
 
 export const reviewCategorySchema = z.enum([
     'correctness',
@@ -27,7 +28,7 @@ export const reviewCategorySchema = z.enum([
 
 const modelReviewIssueSchema = z.object({
     category: reviewCategorySchema.catch('other'),
-    confidence: clampedNumberSchema(0, 1, 0.5),
+    confidence: reviewConfidenceSchema.catch('medium'),
     description: nonEmptyTextSchema('No description provided.'),
     line: positiveIntegerSchema,
     severity: reviewSeveritySchema.catch('medium'),
@@ -44,7 +45,7 @@ export const modelReviewResultSchema = z.object({
 
 export const reviewIssueSchema = z.strictObject({
     category: reviewCategorySchema,
-    confidence: z.number().finite().min(0).max(1),
+    confidence: reviewConfidenceSchema,
     description: z.string(),
     dismissed: z.boolean().optional(),
     id: z.string(),

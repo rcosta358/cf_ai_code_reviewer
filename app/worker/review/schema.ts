@@ -1,4 +1,4 @@
-import { REVIEW_CATEGORIES, REVIEW_SEVERITIES } from '../../src/constants'
+import { REVIEW_CATEGORIES, REVIEW_CONFIDENCE_LEVELS, REVIEW_SEVERITIES } from '../../src/constants'
 
 export const reviewResponseSchema = {
     type: 'object',
@@ -32,9 +32,8 @@ export const reviewResponseSchema = {
                         enum: REVIEW_CATEGORIES,
                     },
                     confidence: {
-                        type: 'number',
-                        minimum: 0,
-                        maximum: 1,
+                        type: 'string',
+                        enum: REVIEW_CONFIDENCE_LEVELS,
                     },
                     title: {
                         type: 'string',

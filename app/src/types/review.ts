@@ -1,4 +1,5 @@
 export type ReviewSeverity = 'low' | 'medium' | 'high'
+export type ReviewConfidence = 'low' | 'medium' | 'high'
 
 export type ReviewCategory =
   | 'correctness'
@@ -11,7 +12,7 @@ export type ReviewCategory =
 
 export type ReviewIssue = {
   category: ReviewCategory
-  confidence: number
+  confidence: ReviewConfidence
   id: string
   title: string
   description: string

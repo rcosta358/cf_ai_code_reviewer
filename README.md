@@ -34,6 +34,25 @@ The prompts used can be found in [`PROMPTS.md`](./PROMPTS.md).
 4. The review is stored and displayed to the user
 6. The user can use the chat to ask follow-up questions or provide additional context
 
+Example of the structured review feedback returned by the LLM:
+
+```json
+{
+  "summary": "...",
+  "rating": 7.5,
+  "issues": [
+    {
+      "type": "correctness",
+      "severity": "high",
+      "message": "...",
+      "suggestion": "...",
+      "confidence": "high",
+      "location": { "line": 12, "column": 5 }
+    }
+  ]
+}
+```
+
 ## Architecture
 
 - **Frontend** (React, Vite, Worker Static Assets): user interface to paste code, view review results, manage sessions, and chat about a review

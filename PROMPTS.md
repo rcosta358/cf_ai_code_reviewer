@@ -77,3 +77,5 @@ This file contains the prompts used for Codex with GPT-5.5 (Medium).
 > implement browser bar tinting so it matches the apps actual background color depending on the theme
 
 > add a github actions workflow that runs npm run deploy triggered on every push or pr to main
+
+> the llm confidence should be a string, low medium or high, not a value from 0 to 1. this way, we also dont need the logic to convert that value to a string to show the user.

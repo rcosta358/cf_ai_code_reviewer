@@ -10,7 +10,7 @@ export const mockReview: ReviewResult = {
     issues: [
         {
             category: 'security',
-            confidence: 0.92,
+            confidence: 'high',
             description:
         'User-controlled input appears to be passed into a sensitive operation without validation or escaping.',
             id: 'issue-mock-1',
@@ -22,7 +22,7 @@ export const mockReview: ReviewResult = {
         },
         {
             category: 'correctness',
-            confidence: 0.78,
+            confidence: 'medium',
             description:
         'The code path does not appear to handle an empty or missing value, which can cause runtime failures in edge cases.',
             id: 'issue-mock-2',
@@ -34,7 +34,7 @@ export const mockReview: ReviewResult = {
         },
         {
             category: 'performance',
-            confidence: 0.67,
+            confidence: 'low',
             description:
         'A repeated operation is performed inside a loop and may become expensive as input size grows.',
             id: 'issue-mock-3',

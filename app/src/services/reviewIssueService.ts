@@ -1,6 +1,4 @@
 import {
-    HIGH_CONFIDENCE_THRESHOLD,
-    MEDIUM_CONFIDENCE_THRESHOLD,
     REVIEW_CATEGORY_LABELS,
     REVIEW_CATEGORY_ORDER,
 } from '../constants'
@@ -11,18 +9,6 @@ export type IssueFilters = {
     category: ReviewCategory | 'all'
     confidence: IssueLevelFilter
     severity: IssueLevelFilter
-}
-
-export function getConfidenceLabel(confidence: number) {
-    if (confidence >= HIGH_CONFIDENCE_THRESHOLD) {
-        return 'High'
-    }
-
-    if (confidence >= MEDIUM_CONFIDENCE_THRESHOLD) {
-        return 'Medium'
-    }
-
-    return 'Low'
 }
 
 export function getVisibleIssues(issues: ReviewIssue[] = []) {
@@ -57,7 +43,7 @@ export function getCategoryCounts(issues: ReviewIssue[]) {
 
 export function formatIssueForCopy(issue: ReviewIssue) {
     return [
-        `${REVIEW_CATEGORY_LABELS[issue.category]} / ${issue.severity.toUpperCase()} / ${getConfidenceLabel(issue.confidence)} confidence`,
+        `${REVIEW_CATEGORY_LABELS[issue.category]} / ${issue.severity.toUpperCase()} / ${issue.confidence.toUpperCase()} confidence`,
         issue.line ? `Line ${issue.line}` : 'Line not provided',
         issue.title,
         issue.description,
@@ -76,11 +62,7 @@ export function getSeverityClassName(severity: ReviewSeverity) {
 }
 
 function matchesConfidence(issue: ReviewIssue, filter: IssueLevelFilter) {
-    if (filter === 'all') {
-        return true
-    }
-
-    return getConfidenceLabel(issue.confidence).toLowerCase() === filter
+    return filter === 'all' || issue.confidence === filter
 }
 
 function compareIssuesByLine(first: ReviewIssue, second: ReviewIssue) {

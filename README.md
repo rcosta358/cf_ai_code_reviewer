@@ -8,7 +8,7 @@
 ![LLM](https://img.shields.io/badge/Model-Llama%203.3-blue)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-https://github.com/user-attachments/assets/e8d733ac-7d78-4a58-ac6c-d042df8c1aba
+![Demo](https://github.com/user-attachments/assets/e8d733ac-7d78-4a58-ac6c-d042df8c1aba)
 
 </div>
 
@@ -23,14 +23,14 @@ The prompts used can be found in [`PROMPTS.md`](./PROMPTS.md).
 - Covers multiple aspects of code quality (correctness, security, maintainability, performance, style, documentation, and other)
 - Each issue is annotated with an explanation, suggestion, severity, confidence level, and source code position
 - Overall rating and summary of the review
-- Review persistence in a key-value storage
-- Follow-up chat to ask for further explanations or provide additional context that may change the review
+- Persistent review storage
+- Follow-up chat for follow-up questions and iterative review
 
 ## Workflow
 
 1. User submits code
 2. Backend sends code and system prompt to the LLM
-3. LLM returns structured JSON review
+3. LLM returns structured review in a JSON schema
 4. Review is stored and displayed
 5. User can use the chat to ask follow-up questions or provide additional context
 
@@ -58,8 +58,8 @@ Example of the structured review feedback returned by the LLM:
 - **Frontend** (React, Vite, Worker Static Assets): user interface to paste code, view review results, manage sessions, and chat about a review
 - **Backend** (Cloudflare Worker): handles API requests, validates payloads, calls the LLM, and stores/retrieves sessions
 - **LLM** (Workers AI, Llama 3.3): performs code analysis and generates structured feedback
-- **Data Storage** (Cloudflare KV): stores review sessions
-- **Session Storage** (Local Storage): saves user preferences and the user session id
+- **Database** (Cloudflare KV): stores reviews
+- **Client Storage** (Local Storage): stores session id (for indexing in KV) and user preferences
 
 ```mermaid
 flowchart LR

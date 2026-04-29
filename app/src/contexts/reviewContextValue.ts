@@ -1,12 +1,17 @@
 import { createContext } from 'react'
 import type { ReviewGenerationMessage, ReviewGenerationStatus, ReviewSession } from '../types/review'
 
+export type SourceLineFocus = {
+  line: number
+  requestId: number
+}
+
 export type ReviewContextValue = {
   activeSession: ReviewSession
   cancelReview: () => void
   dismissIssue: (issueId: string) => void
   focusSourceLine: (line: number) => void
-  focusedSourceLine: number | null
+  focusedSourceLine: SourceLineFocus | null
   generationMessage: ReviewGenerationMessage | null
   generationStatus: ReviewGenerationStatus
   isAwaitingFollowUpReply: boolean

@@ -12,6 +12,7 @@ import {
 import { CodeEditorInput } from './CodeEditorInput'
 import { CodeEditorToolbar } from './CodeEditorToolbar'
 import type { CodeExample } from '../types/review'
+import type { SourceLineFocus } from '../contexts/reviewContextValue'
 
 export type EditorCursorPosition = {
   column: number
@@ -22,7 +23,7 @@ type CodeEditorProps = {
   code: string
   disabled?: boolean
   exampleOptions: readonly CodeExample[]
-  focusedLine: number | null
+  focusedLine: SourceLineFocus | null
   onCursorPositionChange: (cursorPosition: EditorCursorPosition) => void
   onChange: (code: string) => void
   onSelectExample: (code: string) => void
@@ -89,11 +90,11 @@ export function CodeEditor({
             return
         }
 
-        const nextScrollTop = getFocusedLineScrollTop(focusedLine, editorMetrics.lineHeight)
+        const nextScrollTop = getFocusedLineScrollTop(focusedLine.line, editorMetrics.lineHeight)
         textareaRef.current.scrollTo({ top: nextScrollTop, behavior: 'smooth' })
         textareaRef.current.focus({ preventScroll: true })
 
-        const { end, start } = getLineSelectionRange(code, focusedLine)
+        const { end, start } = getLineSelectionRange(code, focusedLine.line)
         textareaRef.current.setSelectionRange(start, end)
         captureCursor(textareaRef.current)
     }, [captureCursor, code, editorMetrics.lineHeight, focusedLine])

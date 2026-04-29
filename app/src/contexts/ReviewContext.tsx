@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 import { REVIEW_GENERATION_TIMEOUT_MS, SESSION_SAVE_DEBOUNCE_MS } from '../constants'
 import { ReviewContext } from './reviewContextValue'
-import type { ReviewContextValue } from './reviewContextValue'
+import type { ReviewContextValue, SourceLineFocus } from './reviewContextValue'
 import { generateReview } from '../services/reviewService'
 import {
     getOrCreateUserSessionId,
@@ -35,7 +35,7 @@ export function ReviewProvider({ children }: ReviewProviderProps) {
     const [generationStatus, setGenerationStatus] = useState<ReviewGenerationStatus>('idle')
     const [generationMessage, setGenerationMessage] = useState<ReviewGenerationMessage | null>(null)
     const [pendingFollowUpSessionId, setPendingFollowUpSessionId] = useState<string | null>(null)
-    const [focusedSourceLine, setFocusedSourceLine] = useState<number | null>(null)
+    const [focusedSourceLine, setFocusedSourceLine] = useState<SourceLineFocus | null>(null)
     const abortControllerRef = useRef<AbortController | null>(null)
     const abortReasonRef = useRef<'cancel' | 'timeout' | null>(null)
     const timeoutTimerRef = useRef<number | null>(null)
@@ -305,7 +305,10 @@ export function ReviewProvider({ children }: ReviewProviderProps) {
     }, [activeSessionId])
 
     const focusSourceLine = useCallback((line: number) => {
-        setFocusedSourceLine(line)
+        setFocusedSourceLine((currentFocus) => ({
+            line,
+            requestId: (currentFocus?.requestId ?? 0) + 1,
+        }))
     }, [])
 
     const value = useMemo<ReviewContextValue>(
